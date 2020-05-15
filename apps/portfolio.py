@@ -1,6 +1,6 @@
 import dash
 import dash_html_components as html
-
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash_table import DataTable
 import pandas as pd
@@ -23,16 +23,4 @@ layout = html.Div([
 )
 def updateTable(n_clicks):
     df = get_account_positions()
-
-    return DataTable(
-        id='datatable-chain',
-        columns=[{"name": i, "id": i} for i in df.columns],
-        data=df.to_dict("rows"),
-        filter_action='native',
-        sort_action='native',
-        style_cell = {
-                'font-family': 'Tahoma',
-                'font-size': '1 em',
-                'text-align': 'center'
-            },
-    )
+    return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)

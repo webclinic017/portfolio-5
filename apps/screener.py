@@ -1,6 +1,6 @@
 import dash
 import dash_html_components as html
-
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash_table import DataTable
 import pandas as pd
@@ -20,7 +20,7 @@ layout = html.Div([
         ['Update'],
         id='screener-btn'
     ),
-    html.Div(id="screener-content", className='w3-row app-datatable',),
+    html.Div(id="screener-content"),
 ])
 
 @app.callback(
@@ -40,15 +40,4 @@ def updateTable(n_clicks):
     df = watchlist_income(tickers, params, short_put)
     df = df.drop(['desired_premium', 'moneyness','type','open_interest','volume','expiration_type','days_to_expiration','spread'], axis = 1) 
 
-    return DataTable(
-        id='datatable-chain',
-        columns=[{"name": i, "id": i} for i in df.columns],
-        data=df.to_dict("rows"),
-        filter_action='native',
-        sort_action='native',
-        style_cell = {
-                'font-family': 'Tahoma',
-                'font-size': '1 em',
-                'text-align': 'center'
-            },
-    )
+    return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
