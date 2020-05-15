@@ -1,5 +1,6 @@
 import dash
 import dash_auth
+import dash_bootstrap_components as dbc
 from flask_caching import Cache
 
 # Keep this out of source code repository - save in a file or a database
@@ -7,7 +8,7 @@ VALID_USERNAME_PASSWORD_PAIRS = [
     ['hello', 'nishant']
 ]
 
-external_stylesheets = ['https://www.w3schools.com/w3css/4/w3.css', 'https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets=[dbc.themes.BOOTSTRAP]
 app = dash.Dash(__name__)
 
 app = dash.Dash(
