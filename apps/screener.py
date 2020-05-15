@@ -1,11 +1,10 @@
 import dash
-import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-from dash_table import DataTable
 import pandas as pd
 
 from app import app
+from .views import screener_view
 
 from service.option_strategies import (
     watchlist_income,
@@ -15,72 +14,7 @@ from service.option_strategies import (
     long_call
 )
 
-form = dbc.Row(
-    [
-        dbc.Col(
-            dbc.FormGroup(
-                [
-                    dbc.Label("Start Date", html_for="example-email-grid"),
-                    dbc.Input(
-                        type="text",
-                        id="start-date",
-                        placeholder="Start Date",
-                    ),
-                ]
-            ),
-            width=3,
-        ),
-        dbc.Col(
-            dbc.FormGroup(
-                [
-                    dbc.Label("End Date", html_for="example-password-grid"),
-                    dbc.Input(
-                        type="text",
-                        id="end-date",
-                        placeholder="End Date",
-                    ),
-                ]
-            ),
-            width=3,
-        ),
-        dbc.Col(
-            dbc.FormGroup(
-                [
-                    dbc.Label("Premium", html_for="premium"),
-                    dbc.Input(
-                        type="text",
-                        id="premium",
-                        placeholder="Premium",
-                    ),
-                ]
-            ),
-            width=3,
-        ),
-        dbc.Col(
-            dbc.FormGroup(
-                [
-                    dbc.Label("Moneyness", html_for="moneyness"),
-                    dbc.Input(
-                        type="text",
-                        id="moneyness",
-                        placeholder="Moneyness",
-                    ),
-                ]
-            ),
-            width=3,
-        ),
-    ],
-    form=True,
-)
-layout = html.Div([
-    form,
-    dbc.Row(
-        dbc.Col(dbc.Button("Update", color="primary", outline=True, className="mr-1", id='screener-btn'),)
-    ),
-    dbc.Row(
-        dbc.Spinner(html.Div(id="screener-output")),
-    )
-])
+layout = screener_view.layout
 
 @app.callback(
     Output('screener-output', 'children'),
