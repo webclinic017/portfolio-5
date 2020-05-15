@@ -1,20 +1,14 @@
 import dash
-import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash_table import DataTable
 import pandas as pd
 
 from app import app
-
+from .views import portfolio_view
 from service.account_positions import get_account_positions
 
-layout = html.Div([
-     dbc.Row(
-        dbc.Col(dbc.Button("Get Portfolio", color="primary", outline=True, className="mr-1", id='portfolio-btn'),)
-    ),
-    dbc.Spinner(html.Div(id="portfolio-output")),
-])
+layout = portfolio_view.layout
 
 @app.callback(
     Output('portfolio-output', 'children'),
