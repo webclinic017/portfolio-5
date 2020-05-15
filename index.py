@@ -6,6 +6,11 @@ from dash.dependencies import Input, Output
 from app import app, server
 from apps import portfolio, screener
 
+import logging
+
+logging.basicConfig(filename="app.log",
+                    level=logging.DEBUG, format='%(asctime)s %(message)s')
+
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
     "position": "fixed",

@@ -65,8 +65,8 @@ def get_call_positions():
     resDF[['intrinsic','extrinsic','ITM']] = df.apply(addmoneyness, axis=1 ,result_type="expand")
     df = df.join(resDF)
 
-    return df
 
+    return df
 
 
 def get_account_positions():
@@ -96,3 +96,4 @@ def __get_position_details(df):
     res = pd.DataFrame()
     res[['underlyingPrice','strikePrice','lastPrice']] = df.apply(get_quotes, axis=1 ,result_type="expand")
     df = df.join(res)
+    return df
