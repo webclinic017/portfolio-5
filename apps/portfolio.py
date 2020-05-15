@@ -10,17 +10,19 @@ from app import app
 from service.account_positions import get_account_positions
 
 layout = html.Div([
-    html.Button(
-        ['Update'],
-        id='portfolio-btn'
+     dbc.Row(
+        dbc.Col(dbc.Button("Get Portfolio", color="primary", outline=True, className="mr-1", id='portfolio-btn'),)
     ),
-    html.Div(id="portfolio-content", className='w3-row app-datatable',),
+    dbc.Spinner(html.Div(id="portfolio-output")),
 ])
 
 @app.callback(
-    Output('portfolio-content', 'children'),
+    Output('portfolio-output', 'children'),
     [Input("portfolio-btn", "n_clicks")]
 )
-def updateTable(n_clicks):
-    df = get_account_positions()
-    return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+def on_button_click(n):
+    if n is None:
+        pass
+    else:
+        df = get_account_positions()
+        return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)

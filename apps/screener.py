@@ -15,29 +15,108 @@ from service.option_strategies import (
     long_call
 )
 
+form = dbc.Row(
+    [
+        dbc.Col(
+            dbc.FormGroup(
+                [
+                    dbc.Label("Start Date", html_for="example-email-grid"),
+                    dbc.Input(
+                        type="text",
+                        id="start-date",
+                        placeholder="Start Date",
+                    ),
+                ]
+            ),
+            width=3,
+        ),
+        dbc.Col(
+            dbc.FormGroup(
+                [
+                    dbc.Label("End Date", html_for="example-password-grid"),
+                    dbc.Input(
+                        type="text",
+                        id="end-date",
+                        placeholder="End Date",
+                    ),
+                ]
+            ),
+            width=3,
+        ),
+        dbc.Col(
+            dbc.FormGroup(
+                [
+                    dbc.Label("Premium", html_for="premium"),
+                    dbc.Input(
+                        type="text",
+                        id="premium",
+                        placeholder="Premium",
+                    ),
+                ]
+            ),
+            width=3,
+        ),
+        dbc.Col(
+            dbc.FormGroup(
+                [
+                    dbc.Label("Moneyness", html_for="moneyness"),
+                    dbc.Input(
+                        type="text",
+                        id="moneyness",
+                        placeholder="Moneyness",
+                    ),
+                ]
+            ),
+            width=3,
+        ),
+    ],
+    form=True,
+)
 layout = html.Div([
-    html.Button(
-        ['Update'],
-        id='screener-btn'
+    form,
+    dbc.Row(
+        dbc.Col(dbc.Button("Update", color="primary", outline=True, className="mr-1", id='screener-btn'),)
     ),
-    html.Div(id="screener-content"),
+    dbc.Row(
+        dbc.Spinner(html.Div(id="screener-output")),
+    )
 ])
 
 @app.callback(
-    Output('screener-content', 'children'),
-    [Input("screener-btn", "n_clicks")]
+    Output('screener-output', 'children'),
+    [Input("screener-btn", "n_clicks")],
+    [
+        State('start-date', 'value'),
+        State('end-date', 'value'),
+        State('premium', 'value'),
+        State('moneyness', 'value'),
+    ]
 )
-def updateTable(n_clicks):
-    tickers = ['AAPL', 'MSFT', 'LYFT','CAT', 'DIS']
+def on_button_click(n, start_date, end_date,premium,moneyness):
+    if n is None:
+        pass
+    else:
+        params = {
+            'moneyness': 2,
+            'premium': 2,
+            'min_expiration_days': 15,
+            'max_expiration_days': 40,
+        }
 
-    params = {
-        'moneyness': 2,
-        'premium': 2,
-        'min_expiration_days': 15,
-        'max_expiration_days': 40,
-    }
+   
+        if start_date:
+            params['min_expiration_days'] = int(start_date)
+        if end_date:
+            params['max_expiration_days'] = int(end_date)
+        if premium:
+            params['premium'] = premium
+        if moneyness:
+            params['moneyness'] = moneyness
 
-    df = watchlist_income(tickers, params, short_put)
-    df = df.drop(['desired_premium', 'moneyness','type','open_interest','volume','expiration_type','days_to_expiration','spread'], axis = 1) 
+        tickers = ['AAPL', 'MSFT', 'LYFT','CAT', 'DIS']
+        
 
-    return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+        df = watchlist_income(tickers, params, short_put)
+        df = df.drop(['desired_premium', 'moneyness','type','open_interest','volume','expiration_type','days_to_expiration','spread'], axis = 1) 
+
+        return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
