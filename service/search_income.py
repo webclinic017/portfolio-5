@@ -81,28 +81,27 @@ def income_finder(ticker, **kwargs):
             option = Option()
             option.symbol = strike_detail['symbol']
             option.underlying = ticker
-            option.mark = float(strike_detail['mark'])
+            option.mark = round(float(strike_detail['mark']),2)
             option.delta = strike_detail['delta']
             option.volatility = strike_detail['volatility']
             option.expiration_type = strike_detail['expirationType']
             option.expiration = expiration_week[0]
-            option.strike_price = float(strike_detail['strikePrice'])
+            option.strike_price = round(float(strike_detail['strikePrice']), 2)
             option.type = strike_detail['putCall']
-            option.returns = float(option.mark/current_stock_price)
+            option.returns = round(float(option.mark/current_stock_price), 2)
             option.breakeven = option.strike_price - option.mark
-            option.stock_price = float(current_stock_price)
-            option.desired_premium = float(params['premium'])
-            option.moneyness = float(params['moneyness'])
+            option.stock_price = round(float(current_stock_price), 2)
+            option.desired_premium = round(float(params['premium']), 2)
+            option.moneyness = round(float(params['moneyness']), 2)
             option.open_interest = int(strike_detail['openInterest'])
             option.volume = int(strike_detail['totalVolume'])
             option.days_to_expiration = strike_detail['daysToExpiration']
-            option.spread = float(
-                strike_detail['ask']) - float(strike_detail['bid'])
+            option.spread =  round(float(
+                strike_detail['ask']) - float(strike_detail['bid']), 2)
 
             # Append to the list
             option_chain.append(option)
     strikes_list = filter(filter_strikes, option_chain)
-    pd.options.display.float_format = '${:,.2f}'.format
     df = pd.DataFrame([vars(s) for s in strikes_list])
     return df
 

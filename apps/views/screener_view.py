@@ -6,10 +6,10 @@ form = dbc.Row(
         dbc.Col(
             dbc.FormGroup(
                 [
-                    dbc.Label("Min", html_for="example-email-grid"),
+                    dbc.Label("Min Expiration Days", html_for="example-email-grid"),
                     dbc.Input(
                         type="text",
-                        id="start-date",
+                        id="min_expiration_days",
                         placeholder="Min",
                     ),
                 ]
@@ -19,10 +19,10 @@ form = dbc.Row(
         dbc.Col(
             dbc.FormGroup(
                 [
-                    dbc.Label("End Date", html_for="example-password-grid"),
+                    dbc.Label("Max Expiration Days", html_for="example-password-grid"),
                     dbc.Input(
                         type="text",
-                        id="end-date",
+                        id="max_expiration_days",
                         placeholder="Max",
                     ),
                 ]
@@ -61,9 +61,9 @@ form = dbc.Row(
 layout = html.Div([
     form,
     dbc.Row(
-        dbc.Col(dbc.Button("Update", color="primary", outline=True, className="mr-1", id='screener-btn'),)
+        dbc.Col(dbc.Button("Update", color="primary", outline=True, className="mr-1", id='screener-btn'),),
     ),
     dbc.Row(
-        dbc.Spinner(html.Div(id="screener-output")),
+        dbc.Spinner(html.Div(id="screener-output")),className="mt-3",
     )
 ])

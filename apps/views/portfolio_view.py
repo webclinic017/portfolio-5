@@ -5,5 +5,7 @@ layout = html.Div([
      dbc.Row(
         dbc.Col(dbc.Button("Get Portfolio", color="primary", outline=True, className="mr-1", id='portfolio-btn'),)
     ),
-    dbc.Spinner(html.Div(id="portfolio-output")),
+    dbc.Row(
+        dbc.Spinner(html.Div(id="portfolio-output")),className="mt-3",
+    )
 ])

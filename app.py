@@ -8,7 +8,7 @@ VALID_USERNAME_PASSWORD_PAIRS = [
     ['hello', 'nishant']
 ]
 
-external_stylesheets=[dbc.themes.BOOTSTRAP]
+external_stylesheets=[dbc.themes.FLATLY]
 app = dash.Dash(__name__)
 
 app = dash.Dash(

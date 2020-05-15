@@ -20,8 +20,8 @@ layout = screener_view.layout
     Output('screener-output', 'children'),
     [Input("screener-btn", "n_clicks")],
     [
-        State('start-date', 'value'),
-        State('end-date', 'value'),
+        State('min_expiration_days', 'value'),
+        State('max_expiration_days', 'value'),
         State('premium', 'value'),
         State('moneyness', 'value'),
     ]
