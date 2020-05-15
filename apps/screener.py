@@ -17,32 +17,39 @@ from service.option_strategies import (
 layout = screener_view.layout
 
 @app.callback(
-    Output('screener-output', 'children'),
+    [Output('screener-output', 'children'),
+    Output('alert-message', 'is_open'),],
     [Input("screener-btn", "n_clicks")],
     [
+        State('contract_type', 'value'),
         State('min_expiration_days', 'value'),
         State('max_expiration_days', 'value'),
+        State('min_delta', 'value'),
+        State('max_delta', 'value'),
         State('premium', 'value'),
         State('moneyness', 'value'),
         State('ticker', 'value'),
     ]
 )
-def on_button_click(n, min_expiration_days, max_expiration_days,premium,moneyness, ticker):
+def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, min_delta, max_delta, premium,moneyness, ticker):
     if n is None:
-        pass
+        return None, False
     else:
-        params = {
-            'moneyness': 2,
-            'premium': 2,
-            'min_expiration_days': 15,
-            'max_expiration_days': 40,
-        }
-
+        params = {}
+        func = None
    
+        if contract_type == "PUT":
+            func = short_put
+        else:
+            func = short_call
         if min_expiration_days:
             params['min_expiration_days'] = int(min_expiration_days)
         if max_expiration_days:
             params['max_expiration_days'] = int(max_expiration_days)
+        if min_delta:
+            params['min_delta'] = float(min_delta)
+        if max_delta:
+            params['max_delta'] = float(max_delta)
         if premium:
             params['premium'] = premium
         if moneyness:
@@ -53,7 +60,10 @@ def on_button_click(n, min_expiration_days, max_expiration_days,premium,moneynes
             tickers = ['AAPL', 'MSFT', 'LYFT','CAT', 'DIS']
         
 
-        df = watchlist_income(tickers, params, short_put)
-        df = df.drop(['desired_premium', 'moneyness','type','open_interest','volume','expiration_type','days_to_expiration','spread'], axis = 1) 
-
-        return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True)
+        df = watchlist_income(tickers, params, func)
+        if not df.empty:
+            df = df.drop(['desired_premium', 'desired_moneyness','desired_min_delta','desired_max_delta','type','open_interest','volume','expiration_type','spread'], axis = 1) 
+            return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True), False
+        
+        else:
+            return None, True

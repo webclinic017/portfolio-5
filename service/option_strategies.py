@@ -55,4 +55,7 @@ def watchlist_income(watch_list, params, func):
         df2 = func(ticker, params)
         # Append to main DF list
         df = df.append(df2, ignore_index=True)
-    return df.sort_values(by=['days_to_expiration','symbol'])
+
+    if not df.empty:
+        df = df.sort_values(by=['days_to_expiration','symbol'])
+    return df
