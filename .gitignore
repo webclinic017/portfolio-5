@@ -6,4 +6,6 @@ __pycache__/
 *.pyc
 # virtual env
 env/
+
+# TD token
 broker/TDAmeritradeState.json

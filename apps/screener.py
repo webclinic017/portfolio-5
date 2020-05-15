@@ -24,9 +24,10 @@ layout = screener_view.layout
         State('max_expiration_days', 'value'),
         State('premium', 'value'),
         State('moneyness', 'value'),
+        State('ticker', 'value'),
     ]
 )
-def on_button_click(n, start_date, end_date,premium,moneyness):
+def on_button_click(n, min_expiration_days, max_expiration_days,premium,moneyness, ticker):
     if n is None:
         pass
     else:
@@ -38,16 +39,18 @@ def on_button_click(n, start_date, end_date,premium,moneyness):
         }
 
    
-        if start_date:
-            params['min_expiration_days'] = int(start_date)
-        if end_date:
-            params['max_expiration_days'] = int(end_date)
+        if min_expiration_days:
+            params['min_expiration_days'] = int(min_expiration_days)
+        if max_expiration_days:
+            params['max_expiration_days'] = int(max_expiration_days)
         if premium:
             params['premium'] = premium
         if moneyness:
             params['moneyness'] = moneyness
-
-        tickers = ['AAPL', 'MSFT', 'LYFT','CAT', 'DIS']
+        if ticker:
+            tickers=[ticker]
+        else: # Hardcode watch list for now
+            tickers = ['AAPL', 'MSFT', 'LYFT','CAT', 'DIS']
         
 
         df = watchlist_income(tickers, params, short_put)

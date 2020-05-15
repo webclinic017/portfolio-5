@@ -6,6 +6,19 @@ form = dbc.Row(
         dbc.Col(
             dbc.FormGroup(
                 [
+                    dbc.Label("Ticker", html_for="example-email-grid"),
+                    dbc.Input(
+                        type="text",
+                        id="ticker",
+                        placeholder="symbol",
+                    ),
+                ]
+            ),
+            width=2,
+        ),
+        dbc.Col(
+            dbc.FormGroup(
+                [
                     dbc.Label("Min Expiration Days", html_for="example-email-grid"),
                     dbc.Input(
                         type="text",
@@ -14,7 +27,7 @@ form = dbc.Row(
                     ),
                 ]
             ),
-            width=3,
+            width=2,
         ),
         dbc.Col(
             dbc.FormGroup(
@@ -27,7 +40,7 @@ form = dbc.Row(
                     ),
                 ]
             ),
-            width=3,
+            width=2,
         ),
         dbc.Col(
             dbc.FormGroup(
@@ -40,7 +53,7 @@ form = dbc.Row(
                     ),
                 ]
             ),
-            width=3,
+            width=2,
         ),
         dbc.Col(
             dbc.FormGroup(
@@ -53,7 +66,7 @@ form = dbc.Row(
                     ),
                 ]
             ),
-            width=3,
+            width=2,
         ),
     ],
     form=True,
@@ -61,7 +74,7 @@ form = dbc.Row(
 layout = html.Div([
     form,
     dbc.Row(
-        dbc.Col(dbc.Button("Update", color="primary", outline=True, className="mr-1", id='screener-btn'),),
+        dbc.Col(dbc.Button("Search", color="primary", outline=True, className="mr-1", id='screener-btn'),),
     ),
     dbc.Row(
         dbc.Spinner(html.Div(id="screener-output")),className="mt-3",
