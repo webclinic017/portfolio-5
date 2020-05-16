@@ -8,12 +8,12 @@ from broker.config import ACCOUNT_NUMBER
 def get_transactions(start_date=None, end_date=None, symbol=None):
 
     if not end_date:
-        end_date = dt.now()
-        end_date = end_date.strftime("%Y-%m-%d")
+        to_date = dt.now()
+        end_date = to_date.strftime("%Y-%m-%d")
     
     if not start_date:
-        start_date = end_date - timedelta(days=5)
-        start_date = start_date.strftime("%Y-%m-%d")
+        from_date = to_date - timedelta(days=90)
+        start_date = from_date.strftime("%Y-%m-%d")
 
     transaction = Transaction()
     df = transaction.get_transactionsDF(

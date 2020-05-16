@@ -73,13 +73,17 @@ layout = layout = html.Div([
             ), className="mt-3"
     ),
     dbc.Row(
+        html.Div(id='sum')
+    ),
+    dbc.Row(
         dbc.Spinner(html.Div(id="transaction-output")),className="mt-3",
     )
 ])
 
 @app.callback(
     [Output('transaction-output', 'children'),
-    Output('transaction-message', 'is_open'),],
+    Output('transaction-message', 'is_open'),
+    Output('sum', 'children'),],
     [Input("transaction-btn", "n_clicks"),
     Input("start-date-picker", "date"),
     Input("end-date-picker", "date")],
@@ -89,10 +93,61 @@ layout = layout = html.Div([
 )
 def on_button_click(n, start_date, end_date, ticker):
     if n is None:
-        return None, False
+        return None, False, ""
     else:
+        params_transactions = {
+            "settlementDate":"DATE",
+            "netAmount":"TOTAL PRICE",
+            "transactionSubType":"TRAN TYPE",
+            "transactionItem.amount":"QTY",
+            "transactionItem.price":"PRICE",
+            "transactionItem.instrument.underlyingSymbol":"TICKER",
+            "transactionItem.instrument.description":"DESC",
+            "transactionItem.instrument.assetType":"TYPE",
+        }					
         df = get_transactions(start_date, end_date, ticker)
         if not df.empty:
-            return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True), False
+            df = df.rename(columns=params_transactions)
+            sum = round(df["TOTAL PRICE"].sum(), 2)
+            sumText = 'Grand Total = "{}"'.format(sum)
+            dt = DataTable(
+                id='table',
+                columns=[{"name": i, "id": i} for i in df.columns],
+                data=df.to_dict('records'),
+                # table interactivity
+                editable=True,
+                # filtering=True,
+                sort_action="native",
+                sort_mode="multi",
+                row_selectable="multi",
+                style_table={
+                    'overflowY': 'scroll',
+                    'width': '100%',
+                    'minWidth': '100%',
+                },
+                style_cell={
+                    'fontFamily': 'sans-serif',
+                    'textAlign': 'center',
+                    'height': '40px',
+                    'fontWeight': '400',
+                    'padding': '10px 10px',
+                    'whiteSpace': 'inherit',
+                    'overflow': 'hidden',
+                    'textOverflow': 'ellipsis',
+                },
+                # style header
+                style_header={
+                    'fontWeight': 'bold',
+                    'backgroundColor': 'white',
+                },
+                style_data_conditional=[
+                    {
+                        # stripped rows
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'rgb(248, 248, 248)'
+                    },
+                ],
+            )
+            return dt, False, sumText
         else:
             return None, False
