@@ -17,7 +17,7 @@ SIDEBAR_STYLE = {
     "top": 0,
     "left": 0,
     "bottom": 0,
-    "width": "16rem",
+    "width": "14rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
 }
@@ -38,7 +38,7 @@ sidebar = html.Div(
             [
                 dbc.NavLink("Portfolio", href="/page-1", id="page-1-link"),
                 dbc.NavLink("Screener", href="/page-2", id="page-2-link"),
-                dbc.NavLink("Page 3", href="/page-3", id="page-3-link"),
+                dbc.NavLink("Transactions", href="/page-3", id="page-3-link"),
             ],
             vertical=True,
             pills=True,
