@@ -9,3 +9,7 @@ env/
 
 # TD token
 broker/TDAmeritradeState.json
+
+*.log
+
+TestClient.py
