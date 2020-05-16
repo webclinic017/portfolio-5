@@ -4,7 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from app import app, server
-from apps import portfolio, screener
+from apps import portfolio, screener, transaction
 
 import logging
 
@@ -72,7 +72,7 @@ def render_page_content(pathname):
     elif pathname == "/page-2":
         return screener.layout
     elif pathname == "/page-3":
-        return html.P("Oh cool, this is page 3!")
+        return transaction.layout
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [

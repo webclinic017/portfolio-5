@@ -103,7 +103,7 @@ class Transaction(Base):
             return self._data
 
     
-    def transactionsDF(self, account=None, transaction_type=None, symbol=None,
+    def get_transactionsDF(self, account=None, transaction_type=None, symbol=None,
                          start_date=None, end_date=None, transaction_id=None):
         '''get transaction information as Dataframe'''
         return pd.json_normalize(self.get_transactions(account=account, transaction_type=transaction_type, symbol=symbol, start_date=start_date, end_date=end_date))
