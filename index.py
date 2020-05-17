@@ -8,9 +8,6 @@ from apps import portfolio, screener, transaction
 
 import logging
 
-logging.basicConfig(filename="app.log",
-                    level=logging.DEBUG, format='%(asctime)s %(message)s')
-
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -84,4 +81,6 @@ def render_page_content(pathname):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(filename="app.log",
+                    level=logging.DEBUG, format='%(asctime)s %(message)s')
     app.run_server(debug=True)

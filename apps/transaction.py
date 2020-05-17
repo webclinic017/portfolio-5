@@ -58,6 +58,41 @@ layout = layout = html.Div([
                 ),
                 width=2,
             ),
+            dbc.Col(
+                dbc.FormGroup(
+                    [
+                        dbc.Label("Option Type", html_for="example-email-grid"),
+                        dcc.Dropdown(
+                            id="option-type",
+                            options=[
+                                {"label": "ALL", "value": ''},
+                                {"label": "CALL", "value": 'CALL'},
+                                {"label": "PUT", "value": 'PUT'},
+                            ],
+                        ),               
+                    ],
+
+                ),
+                width=2,
+            ),
+            dbc.Col(
+                dbc.FormGroup(
+                    [
+                        dbc.Label("Tran Type", html_for="example-email-grid"),
+                        dcc.Dropdown(
+                            id="tran-type",
+                            options=[
+                                {"label": "ALL", "value": ''},
+                                {"label": "SL", "value": 'SL'},
+                                {"label": "BY", "value": 'BY'},
+                                {"label": "OA", "value": 'OA'},
+                            ],
+                        ),               
+                    ],
+
+                ),
+                width=2,
+            ),
         ],
     ),
     dbc.Row(
@@ -84,30 +119,23 @@ layout = layout = html.Div([
     [Output('transaction-output', 'children'),
     Output('transaction-message', 'is_open'),
     Output('sum', 'children'),],
-    [Input("transaction-btn", "n_clicks"),
-    Input("start-date-picker", "date"),
-    Input("end-date-picker", "date")],
+    [
+        Input("transaction-btn", "n_clicks"),
+        Input("start-date-picker", "date"),
+        Input("end-date-picker", "date"),
+    ],
     [
         State('transaction-ticker', 'value'),
+        State("option-type", "value"),
+        State("tran-type", "value"),
     ]
 )
-def on_button_click(n, start_date, end_date, ticker):
+def on_button_click(n, start_date, end_date, ticker, option_type, tran_type):
     if n is None:
         return None, False, ""
-    else:
-        params_transactions = {
-            "settlementDate":"DATE",
-            "netAmount":"TOTAL PRICE",
-            "transactionSubType":"TRAN TYPE",
-            "transactionItem.amount":"QTY",
-            "transactionItem.price":"PRICE",
-            "transactionItem.instrument.underlyingSymbol":"TICKER",
-            "transactionItem.instrument.description":"DESC",
-            "transactionItem.instrument.assetType":"TYPE",
-        }					
-        df = get_transactions(start_date, end_date, ticker)
+    else:					
+        df = get_transactions(start_date, end_date, ticker, option_type, tran_type)
         if not df.empty:
-            df = df.rename(columns=params_transactions)
             sum = round(df["TOTAL PRICE"].sum(), 2)
             sumText = 'Grand Total = "{}"'.format(sum)
             dt = DataTable(
@@ -150,4 +178,4 @@ def on_button_click(n, start_date, end_date, ticker):
             )
             return dt, False, sumText
         else:
-            return None, False
+            return None, False, ""

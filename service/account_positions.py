@@ -13,6 +13,24 @@ class Account_Positions:
 
     def __init__(self):
         super().__init__()
+        self.params_options = {
+            "quantity":"QTY",
+            "underlying":"TICKER",
+            "symbol":"SYMBOL",
+            "underlyingPrice":"TICKER PRICE",
+            "strikePrice":"STRIKE PRICE",
+            "lastPrice":"OPTION PRICE",
+            "intrinsic":"INTRINSIC",
+            "extrinsic":"EXTRINSIC",
+            "ITM":"ITM",
+        }
+
+        self.params_stocks = {
+            "quantity":"QTY",
+            "underlying":"TICKER",
+            "mark":"TICKER PRICE",
+        }
+
         # Get All Open Positions
         self.res = self.get_account_positions()
 
@@ -43,6 +61,7 @@ class Account_Positions:
 
         if not df.empty:
             df = df.drop(['option_type','type'], axis=1)
+            df = df.rename(columns=self.params_options)
 
         return df
 
@@ -74,6 +93,7 @@ class Account_Positions:
 
         if not df.empty:
             df = df.drop(['option_type','type'], axis=1)
+            df = df.rename(columns=self.params_options)
 
         return df
 
@@ -93,6 +113,8 @@ class Account_Positions:
         df = self.__get_stock_position_details(res_equity)
         if not df.empty:
             df = df.drop(['option_type','type','symbol'], axis=1)
+            df = df.rename(columns=self.params_stocks)
+
         return df
 
 

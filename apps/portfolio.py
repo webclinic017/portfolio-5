@@ -10,33 +10,10 @@ from service.account_positions import Account_Positions
 
 positions = Account_Positions()
 
-params_options = {
-    "quantity":"QTY",
-    "underlying":"TICKER",
-    "symbol":"SYMBOL",
-    "underlyingPrice":"TICKER PRICE",
-    "strikePrice":"STRIKE PRICE",
-    "lastPrice":"OPTION PRICE",
-    "intrinsic":"INTRINSIC",
-    "extrinsic":"EXTRINSIC",
-    "ITM":"ITM",
-}
-
-params_stocks = {
-    "quantity":"QTY",
-    "underlying":"TICKER",
-    "mark":"TICKER PRICE",
-}
-								
-
 df_puts = positions.get_put_positions()
-df_puts = df_puts.rename(columns=params_options)
-
 df_calls = positions.get_call_positions()
-df_calls = df_calls.rename(columns=params_options)
-
 df_stocks = positions.get_stock_positions()
-df_stocks = df_stocks.rename(columns=params_stocks)
+
 
 layout = html.Div([
     dbc.Row(
