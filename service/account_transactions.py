@@ -21,6 +21,7 @@ def get_transactions(
         "transactionItem.instrument.assetType": "TYPE",
         "transactionItem.instrument.putCall": "OPTION TYPE",
         "transactionItem.positionEffect": "POSITION",
+        "transactionItem.instrument.symbol" : "SYMBOL",
     }
 
 
@@ -53,6 +54,7 @@ def get_transactions(
             "transactionItem.instrument.description",
             "transactionItem.instrument.assetType",
             "transactionItem.instrument.putCall",
+            "transactionItem.instrument.symbol",
         ],
         axis=1,
     )
