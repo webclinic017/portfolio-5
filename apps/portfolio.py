@@ -20,18 +20,18 @@ layout = html.Div([
         html.H4("PUTS"),
     ),
     dbc.Row(
-        dbc.Table.from_dataframe(df_puts, striped=True, bordered=True, hover=True, className="mt-3")
+        dbc.Table.from_dataframe(df_puts, striped=True, bordered=True)
     ),
     dbc.Row(
         html.H4("CALLS"),
     ),
     dbc.Row(
-        dbc.Table.from_dataframe(df_calls, striped=True, bordered=True, hover=True, className="mt-3")
+        dbc.Table.from_dataframe(df_calls, striped=True, bordered=True)
     ),
     dbc.Row(
         html.H4("STOCKS"),
     ),
     dbc.Row(
-        dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True, hover=True, className="mt-3")
+        dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True)
     ),
 ])
