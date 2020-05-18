@@ -21,7 +21,7 @@ def income_finder(ticker, **kwargs):
         "premium": 0,
         "contractType": None,
         "volatility": None,
-        "min_delta": -1,
+        "min_delta": 0,
         "max_delta": 0.5,
     }
 
@@ -89,12 +89,14 @@ def income_finder(ticker, **kwargs):
             option.strike_price = round(float(strike_detail["strikePrice"]), 2)
             option.type = strike_detail["putCall"]
             option.days_to_expiration = strike_detail["daysToExpiration"]
-            option.returns = round(float(100 * 365 * option.mark / (current_stock_price * option.days_to_expiration)), 2)
+            option.returns = "{:.2%}".format(
+                365 * option.mark / (current_stock_price * option.days_to_expiration)
+            )
             option.breakeven = option.strike_price - option.mark
             option.stock_price = round(float(current_stock_price), 2)
             option.open_interest = int(strike_detail["openInterest"])
             option.volume = int(strike_detail["totalVolume"])
-            
+
             option.spread = round(
                 float(strike_detail["ask"]) - float(strike_detail["bid"]), 2
             )
@@ -107,6 +109,7 @@ def income_finder(ticker, **kwargs):
             option_chain.append(option)
     strikes_list = filter(filter_strikes, option_chain)
     df = pd.DataFrame([vars(s) for s in strikes_list])
+    print(df.columns)
     return df
 
 
@@ -134,8 +137,20 @@ def filter_strikes(option):
     def premium_flag(option):
         return option.mark > option.desired_premium * option.stock_price / 100
 
+
     def delta_flag(option):
-        return option.desired_min_delta < option.delta < option.desired_max_delta
+        '''
+        Since UI is taking positive deltas, need to convert to negative deltas for puts
+        '''
+
+        return (
+            (option.type == PUT_CALL.PUT.value)
+            and (-option.desired_min_delta > option.delta > -option.desired_max_delta)
+            or (
+                (option.type == PUT_CALL.CALL.value)
+                and (option.desired_min_delta < option.delta < option.desired_max_delta)
+            )
+        )
 
     if premium_flag(option) and moneyness_flag(option) and delta_flag(option):
         return True

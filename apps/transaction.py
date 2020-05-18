@@ -93,6 +93,22 @@ layout = layout = html.Div([
                 ),
                 width=2,
             ),
+            dbc.Col(
+                dbc.FormGroup(
+                    [
+                        dbc.Label("Group By", html_for="example-email-grid"),
+                        dcc.Dropdown(
+                            id="tran-group",
+                            options=[
+                                {"label": "Symbol", "value": 'S'},
+                                {"label": "Date", "value": 'D'},
+                            ],
+                        ),               
+                    ],
+
+                ),
+                width=2,
+            ),
         ],
     ),
     dbc.Row(

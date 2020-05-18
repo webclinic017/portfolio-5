@@ -13,3 +13,4 @@ broker/TDAmeritradeState.json
 *.log
 
 TestClient.py
+utils/response_test.json

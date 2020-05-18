@@ -28,7 +28,7 @@ layout = html.Div([
                         dbc.Input(
                             type="text",
                             id="ticker",
-                            placeholder="symbol",
+                            placeholder="",
                         ),
                     ]
                 ),
@@ -45,7 +45,7 @@ layout = html.Div([
                         dbc.Input(
                             type="text",
                             id="min_expiration_days",
-                            placeholder="Min",
+                            placeholder="15",
                         ),
                     ]
                 ),
@@ -58,7 +58,7 @@ layout = html.Div([
                         dbc.Input(
                             type="text",
                             id="max_expiration_days",
-                            placeholder="Max",
+                            placeholder="45",
                         ),
                     ]
                 ),
@@ -71,7 +71,7 @@ layout = html.Div([
                         dbc.Input(
                             type="text",
                             id="min_delta",
-                            placeholder="min",
+                            placeholder="0",
                         ),
                     ]
                 ),
@@ -84,7 +84,7 @@ layout = html.Div([
                         dbc.Input(
                             type="text",
                             id="max_delta",
-                            placeholder="max",
+                            placeholder="0.5",
                         ),
                     ]
                 ),
@@ -93,11 +93,11 @@ layout = html.Div([
              dbc.Col(
                 dbc.FormGroup(
                     [
-                        dbc.Label("Premium", html_for="premium"),
+                        dbc.Label("Premium %", html_for="premium"),
                         dbc.Input(
                             type="text",
                             id="premium",
-                            placeholder="Premium",
+                            placeholder="0",
                         ),
                     ]
                 ),
@@ -106,11 +106,11 @@ layout = html.Div([
             dbc.Col(
                 dbc.FormGroup(
                     [
-                        dbc.Label("Min Stock Discount/Gain", html_for="moneyness"),
+                        dbc.Label("Stock Discount/Gain %", html_for="moneyness"),
                         dbc.Input(
                             type="text",
                             id="moneyness",
-                            placeholder="Moneyness",
+                            placeholder="0",
                         ),
                     ]
                 ),
