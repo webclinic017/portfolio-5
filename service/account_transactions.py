@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from broker.transactions import Transaction
 from broker.config import ACCOUNT_NUMBER
-
+import pandas as pd
 
 def get_transactions(
     start_date=None, end_date=None, symbol=None, option_type=None, tran_type=None
@@ -11,7 +11,7 @@ def get_transactions(
     
     # Mapping column for UI display
     params_transactions = {
-        "settlementDate": "DATE",
+        "transactionDate": "DATE",
         "netAmount": "TOTAL PRICE",
         "transactionSubType": "TRAN TYPE",
         "transactionItem.amount": "QTY",
@@ -44,8 +44,9 @@ def get_transactions(
 
     df = df.filter(
         [
-            "orderDate",
+            "transactionDate",
             "netAmount",
+            "transactionItem.instrument.symbol",
             "transactionSubType",
             "transactionItem.positionEffect",
             "transactionItem.amount",
@@ -54,10 +55,13 @@ def get_transactions(
             "transactionItem.instrument.description",
             "transactionItem.instrument.assetType",
             "transactionItem.instrument.putCall",
-            "transactionItem.instrument.symbol",
         ],
         axis=1,
     )
+
+    # Change df['transactionDate'] string to remove timestamp
+    df['transactionDate'] = pd.to_datetime(df['transactionDate'], format="%Y-%m-%dT%H:%M:%S%z").dt.strftime("%m/%d/%y")
+
     if option_type:
         isOptionType = df["transactionItem.instrument.putCall"] == option_type
         df = df[isOptionType]
@@ -67,5 +71,4 @@ def get_transactions(
         df = df[isTranType]
     
     df = df.rename(columns=params_transactions)
-
     return df

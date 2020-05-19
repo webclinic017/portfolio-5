@@ -17,3 +17,8 @@
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
 }
+.content {
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding: 2rem 1rem;
+}

@@ -8,59 +8,29 @@ from apps import portfolio, screener, transaction
 
 import logging
 
-# the style arguments for the sidebar. We use position:fixed and a fixed width
-SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "14rem",
-    "padding": "2rem 1rem",
-    "background-color": "#f8f9fa",
-}
-
 # the styles for the main content position it to the right of the sidebar and
 # add some padding.
 CONTENT_STYLE = {
-    "margin-left": "18rem",
+    "margin-left": "2rem",
     "margin-right": "2rem",
     "padding": "2rem 1rem",
 }
-
-sidebar = html.Div(
-    [
-        html.H3("Portfolio Tool"),
-        html.Hr(),
-        dbc.Nav(
-            [
-                dbc.NavLink("Portfolio", href="/page-1", id="page-1-link"),
-                dbc.NavLink("Screener", href="/page-2", id="page-2-link"),
-                dbc.NavLink("Transactions", href="/page-3", id="page-3-link"),
-            ],
-            vertical=True,
-            pills=True,
-        ),
+navbar = dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dbc.NavLink("Portfolio", href="/page-1", id="page-1-link")),
+        dbc.NavItem(dbc.NavLink("Screener", href="/page-2", id="page-2-link")),
+        dbc.NavItem(dbc.NavLink("Transactions", href="/page-3", id="page-3-link")),
     ],
-    style=SIDEBAR_STYLE,
+    brand="Portfolio",
+    brand_href="#",
+    color="primary",
+    dark=True,
 )
 
-content = html.Div(id="page-content", style=CONTENT_STYLE)
 
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
+content = html.Div(id="page-content", className="content")
 
-
-# this callback uses the current pathname to set the active state of the
-# corresponding nav link to true, allowing users to tell see page they are on
-@app.callback(
-    [Output(f"page-{i}-link", "active") for i in range(1, 4)],
-    [Input("url", "pathname")],
-)
-def toggle_active_links(pathname):
-    if pathname == "/":
-        # Treat page 1 as the homepage / index
-        return True, False, False
-    return [pathname == f"/page-{i}" for i in range(1, 4)]
-
+app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):

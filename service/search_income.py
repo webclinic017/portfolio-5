@@ -109,7 +109,6 @@ def income_finder(ticker, **kwargs):
             option_chain.append(option)
     strikes_list = filter(filter_strikes, option_chain)
     df = pd.DataFrame([vars(s) for s in strikes_list])
-    print(df.columns)
     return df
 
 
