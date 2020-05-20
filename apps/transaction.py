@@ -62,13 +62,14 @@ layout = layout = html.Div([
                 dbc.FormGroup(
                     [
                         dbc.Label("Option Type", html_for="example-email-grid"),
-                        dcc.Dropdown(
+                        dbc.Select(
                             id="option-type",
                             options=[
                                 {"label": "ALL", "value": ''},
                                 {"label": "CALL", "value": 'CALL'},
                                 {"label": "PUT", "value": 'PUT'},
                             ],
+                            value="ALL",
                         ),               
                     ],
 
@@ -79,14 +80,15 @@ layout = layout = html.Div([
                 dbc.FormGroup(
                     [
                         dbc.Label("Tran Type", html_for="example-email-grid"),
-                        dcc.Dropdown(
+                        dbc.Select(
                             id="tran-type",
                             options=[
-                                {"label": "ALL", "value": ''},
+                                {"label": "SELECT", "value": ""},
                                 {"label": "SL", "value": 'SL'},
                                 {"label": "BY", "value": 'BY'},
                                 {"label": "OA", "value": 'OA'},
                             ],
+                            value="SELECT",
                         ),               
                     ],
 
@@ -97,12 +99,14 @@ layout = layout = html.Div([
                 dbc.FormGroup(
                     [
                         dbc.Label("Group By", html_for="example-email-grid"),
-                        dcc.Dropdown(
+                        dbc.Select(
                             id="tran-group",
                             options=[
+                                {"label": "SELECT", "value": ""},
                                 {"label": "Symbol", "value": 'S'},
                                 {"label": "Date", "value": 'D'},
                             ],
+                            value="SELECT",
                         ),               
                     ],
 

@@ -5,7 +5,7 @@ import pandas as pd
 
 from app import app
 from .views import screener_view
-from utils.constants import watch_list
+from utils.constants import stocks
 
 from service.option_strategies import (
     watchlist_income,
@@ -30,9 +30,10 @@ layout = screener_view.layout
         State('premium', 'value'),
         State('moneyness', 'value'),
         State('ticker', 'value'),
+        State('ticker_list', 'value'),
     ]
 )
-def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, min_delta, max_delta, premium,moneyness, ticker):
+def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, min_delta, max_delta, premium,moneyness, ticker, ticker_list):
     if n is None:
         return None, False
     else:
@@ -43,6 +44,8 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
             func = short_put
         else:
             func = short_call
+        
+        print(ticker_list)
             
         if min_expiration_days:
             params['min_expiration_days'] = int(min_expiration_days)
@@ -59,7 +62,7 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
         if ticker:
             tickers=[ticker]
         else: # Get constant watch list
-            tickers = watch_list
+            tickers = stocks
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:

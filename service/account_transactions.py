@@ -24,11 +24,12 @@ def get_transactions(
         "transactionItem.instrument.symbol" : "SYMBOL",
     }
 
+    # In case start date or end date is not passed, use to initiliaze default
+    to_date = dt.now()
 
     if not end_date:
-        to_date = dt.now()
         end_date = to_date.strftime("%Y-%m-%d")
-
+    
     if not start_date:
         from_date = to_date - timedelta(days=180)
         start_date = from_date.strftime("%Y-%m-%d")
