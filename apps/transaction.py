@@ -69,7 +69,6 @@ layout = layout = html.Div([
                                 {"label": "CALL", "value": 'CALL'},
                                 {"label": "PUT", "value": 'PUT'},
                             ],
-                            value="ALL",
                         ),               
                     ],
 
@@ -83,12 +82,11 @@ layout = layout = html.Div([
                         dbc.Select(
                             id="tran-type",
                             options=[
-                                {"label": "SELECT", "value": ""},
+                                {"label": "ALL", "value": ''},
                                 {"label": "SL", "value": 'SL'},
                                 {"label": "BY", "value": 'BY'},
                                 {"label": "OA", "value": 'OA'},
                             ],
-                            value="SELECT",
                         ),               
                     ],
 
