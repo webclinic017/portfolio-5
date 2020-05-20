@@ -5,7 +5,7 @@ import pandas as pd
 
 from app import app
 from .views import screener_view
-from utils.constants import stocks
+from utils.constants import screener_list
 
 from service.option_strategies import (
     watchlist_income,
@@ -59,10 +59,11 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
             params['premium'] = premium
         if moneyness:
             params['moneyness'] = moneyness
+        
         if ticker:
             tickers=[ticker]
-        else: # Get constant watch list
-            tickers = stocks
+        elif ticker_list:
+            tickers = screener_list.get(ticker_list)
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
