@@ -17,12 +17,12 @@ def income_finder(ticker, **kwargs):
     params = {
         "min_expiration_days": 15,
         "max_expiration_days": 45,
-        "moneyness": 0,
-        "premium": 0,
+        "moneyness": 5,
+        "premium": 2,
         "contractType": None,
         "volatility": None,
-        "min_delta": 0,
-        "max_delta": 0.5,
+        "min_delta": 0.25,
+        "max_delta": 0.35,
     }
 
     for key in kwargs:

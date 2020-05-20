@@ -36,7 +36,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Label("WatchList"),
                             dbc.Select(
                                 options=[{"label": i, "value": i} for i in screener_list],
-                                value="SELECT",
+                                value="",
                                 id="ticker_list",
                             ),
                         ]
@@ -86,7 +86,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                     dbc.FormGroup(
                         [
                             dbc.Label("Min Delta", html_for="example-email-grid"),
-                            dbc.Input(type="text", id="min_delta", placeholder="0",),
+                            dbc.Input(type="text", id="min_delta", placeholder="0.25",),
                         ]
                     ),
                     width=6,
@@ -95,7 +95,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                     dbc.FormGroup(
                         [
                             dbc.Label("Max Delta", html_for="example-email-grid"),
-                            dbc.Input(type="text", id="max_delta", placeholder="0.5",),
+                            dbc.Input(type="text", id="max_delta", placeholder="0.35",),
                         ]
                     ),
                     width=6,
@@ -108,7 +108,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                     dbc.FormGroup(
                         [
                             dbc.Label("Premium %", html_for="premium"),
-                            dbc.Input(type="text", id="premium", placeholder="0",),
+                            dbc.Input(type="text", id="premium", placeholder="2",),
                         ]
                     ),
                     width=6,
@@ -117,7 +117,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                     dbc.FormGroup(
                         [
                             dbc.Label("Discount/Gain %", html_for="moneyness"),
-                            dbc.Input(type="text", id="moneyness", placeholder="0",),
+                            dbc.Input(type="text", id="moneyness", placeholder="5",),
                         ]
                     ),
                     width=6,
