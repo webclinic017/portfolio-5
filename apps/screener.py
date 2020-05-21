@@ -1,11 +1,14 @@
+import pandas as pd
+
 import dash
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-import pandas as pd
+from dash_table import DataTable
 
 from app import app
 from .views import screener_view
 from utils.constants import screener_list
+from utils.constants import style_cell, style_header, style_data_conditional
 
 from service.option_strategies import (
     watchlist_income,
@@ -68,7 +71,19 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
             df = df.drop(['desired_premium', 'desired_moneyness','desired_min_delta','desired_max_delta','type','open_interest','volume','expiration_type','spread'], axis = 1) 
-            return dbc.Table.from_dataframe(df, striped=True, bordered=True, id="screen-table", hover=True), False
         
+            dt = DataTable(
+                    id="table",
+                    columns=[{"name": i, "id": i} for i in df.columns],
+                    data=df.to_dict("records"),
+                    page_size=10,
+                    sort_action="native",
+                    filter_action="native",
+                    style_cell=style_cell,
+                    style_header=style_header,
+                    style_data_conditional=style_data_conditional,
+                )
+            return dt, False
+            
         else:
             return None, True

@@ -8,14 +8,15 @@ import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 from dash_table import DataTable
+from utils.constants import style_cell, style_header, style_data_conditional
 
 from app import app
 
 from service.account_transactions import get_transactions
 
-LEFT_COLUMN = dbc.Jumbotron(
+TOP_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Transactions"),
+        html.H5(children="Transactions"),
         html.Hr(className="my-2"),
         dbc.Row(
             [
@@ -24,7 +25,6 @@ LEFT_COLUMN = dbc.Jumbotron(
                         [
                             dbc.Label(
                                 "From Date",
-                                html_for="example-email-grid",
                                 className="mr-3",
                             ),
                             dbc.Col(
@@ -34,14 +34,13 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
                         [
                             dbc.Label(
                                 "To Date",
-                                html_for="example-email-grid",
                                 className="mr-3",
                             ),
                             dbc.Col(
@@ -51,12 +50,8 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
-            ],
-        ),
-        dbc.Row(
-            [
                 dbc.Col(
                     dbc.FormGroup(
                         [
@@ -68,7 +63,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ],
                     ),
-                    width=6,
+                    width=2,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -84,12 +79,8 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ],
                     ),
-                    width=6,
+                    width=2,
                 ),
-            ],
-        ),
-        dbc.Row(
-            [
                 dbc.Col(
                     dbc.FormGroup(
                         [
@@ -105,7 +96,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ],
                     ),
-                    width=6,
+                    width=2,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -122,7 +113,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ],
                     ),
-                    width=6,
+                    width=2,
                 ),
             ],
         ),
@@ -138,6 +129,7 @@ LEFT_COLUMN = dbc.Jumbotron(
             ),
         ),
     ],
+    className="container-fluid",
 )
 
 SEARCH_RESULT = [
@@ -151,12 +143,15 @@ SEARCH_RESULT = [
         ),
         className="mt-3",
     ),
-    dbc.Row(html.Div(id="sum")),
-    dbc.Row(dbc.Spinner(html.Div(id="transaction-output")), className="mt-3",),
+    dbc.Row(html.Div(id="sum"), className="mb-3"),
+    dbc.Row(dbc.Spinner(html.Div(id="transaction-output")),),
 ]
 
 layout = html.Div(
-    [dbc.Row([dbc.Col(LEFT_COLUMN, width=3, className="px-3"), dbc.Col(SEARCH_RESULT, width=9, className="px-3"), ],),],
+    [
+        dbc.Row(TOP_COLUMN, className="justify-content-center"), 
+        dbc.Row(SEARCH_RESULT, className="justify-content-center"),
+    ],
 )
 
 
@@ -189,28 +184,12 @@ def on_button_click(n, start_date, end_date, ticker, option_type, tran_type):
                 id="table",
                 columns=[{"name": i, "id": i} for i in df.columns],
                 data=df.to_dict("records"),
-                # table interactivity
-                # filtering=True,
+                page_size=10,
                 sort_action="native",
-                style_cell={
-                    'padding': '15px',
-                    'width': 'auto',
-                    'textAlign': 'center',
-                    'fontFamily': 'sans-serif',
-                },
-                 style_header={
-                    'fontWeight': 'bold',
-                    'backgroundColor': 'white',
-                },
-                style_data_conditional=[
-                    {
-                        # stripped rows
-                        'if': {'row_index': 'odd'},
-                        'backgroundColor': 'rgb(248, 248, 248)'
-                    },
-                ],
-
-                
+                filter_action="native",
+                style_cell=style_cell,
+                style_header=style_header,
+                style_data_conditional=style_data_conditional,
             )
             return dt, False, sumText
         else:

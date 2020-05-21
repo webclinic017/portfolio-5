@@ -2,11 +2,10 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from utils.constants import screener_list
 
-LEFT_COLUMN = dbc.Jumbotron(
+TOP_COLUMN = dbc.Jumbotron(
     [
-        html.H4(children="Option Income Finder"),
+        html.H5(children="Income Finder"),
         html.Hr(className="my-2"),
-        html.P(children="Screen the current option markets for income-focused option"),
         dbc.Row(
             [
                 dbc.Col(
@@ -15,7 +14,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Label("Choose one"),
                             dbc.RadioItems(
                                 options=[
-                                    {"label": "PUT", "value": "PUT"},
+                                    {"label": "SECURED PUTs", "value": "PUT"},
                                     {"label": "COVERED CALL", "value": "CALL"},
                                 ],
                                 value="PUT",
@@ -24,24 +23,22 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ]
                     ),
-                    width=12,
+                    width=6,
                 ),
-            ],
-        ),
-        dbc.Row(
-            [
                 dbc.Col(
                     dbc.FormGroup(
                         [
                             dbc.Label("WatchList"),
                             dbc.Select(
-                                options=[{"label": i, "value": i} for i in screener_list],
+                                options=[
+                                    {"label": i, "value": i} for i in screener_list
+                                ],
                                 value="",
                                 id="ticker_list",
                             ),
                         ]
                     ),
-                    width=6,
+                    width=3,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -50,7 +47,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Input(type="text", id="ticker", placeholder="",),
                         ]
                     ),
-                    width=6,
+                    width=3,
                 ),
             ],
         ),
@@ -65,7 +62,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -76,12 +73,8 @@ LEFT_COLUMN = dbc.Jumbotron(
                             ),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
-            ],
-        ),
-        dbc.Row(
-            [
                 dbc.Col(
                     dbc.FormGroup(
                         [
@@ -89,7 +82,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Input(type="text", id="min_delta", placeholder="0.25",),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -98,12 +91,8 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Input(type="text", id="max_delta", placeholder="0.35",),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
-            ],
-        ),
-        dbc.Row(
-            [
                 dbc.Col(
                     dbc.FormGroup(
                         [
@@ -111,7 +100,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Input(type="text", id="premium", placeholder="2",),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -120,7 +109,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Input(type="text", id="moneyness", placeholder="5",),
                         ]
                     ),
-                    width=6,
+                    width=2,
                 ),
             ]
         ),
@@ -135,21 +124,26 @@ LEFT_COLUMN = dbc.Jumbotron(
             ),
         ),
     ],
+    className="container-fluid",
 )
 
 SEARCH_RESULT = [
     dbc.Row(
-        dbc.Alert(
-            "No Records returned the matching criteria",
-            id="alert-message",
-            is_open=False,
-            duration=2000,
-            color="danger",
-        ),
+        [
+            dbc.Col(
+                dbc.Alert(
+                    "No Records returned the matching criteria",
+                    id="alert-message",
+                    is_open=False,
+                    duration=2000,
+                    color="danger",
+                ),
+                className="mt-3",
+            )
+        ]
     ),
-    dbc.Row(dbc.Spinner(html.Div(id="screener-output")),),
+    dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="screener-output")),)]),
 ]
-
 layout = html.Div(
-    [dbc.Row([dbc.Col(LEFT_COLUMN, width=3,), dbc.Col(SEARCH_RESULT, width=9),],),],
+    [dbc.Row(TOP_COLUMN, className="justify-content-center"), dbc.Row(SEARCH_RESULT, className="justify-content-center"),],
 )

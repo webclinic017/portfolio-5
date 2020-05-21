@@ -17,11 +17,3 @@
     margin-right: 2rem;
     padding: 2rem 1rem;
 }
-.row {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    margin-left: 5px;
-}
