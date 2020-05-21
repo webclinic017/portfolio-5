@@ -6,6 +6,20 @@ from .checks import (
 from datetime import datetime
 from .search_income import income_finder
 
+ # Mapping column for UI display
+table_mapping = {
+    "strike_price": "STRIKE",
+    "stock_price": "STOCK PRICE",
+    "volatility": "VOLATILITY",
+    "delta": "DELTA",
+    "mark": "PRICE",
+    "underlying": "TICKER",
+    "expiration": "EXPIRATION",
+    "days_to_expiration": "EXPIRATION DAYS",
+    "returns": "RETURNS",
+    "breakeven": "POSITION",
+    "symbol" : "SYMBOL",										
+}
 
 def _process_legs(ticker, legs, params, check_func):
     if _filter_checks(params, check_func):
@@ -58,4 +72,5 @@ def watchlist_income(watch_list, params, func):
 
     if not df.empty:
         df = df.sort_values(by=['days_to_expiration','symbol'])
+        df = df.rename(columns=table_mapping)
     return df

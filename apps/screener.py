@@ -44,8 +44,6 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
             func = short_put
         else:
             func = short_call
-        
-        print(ticker_list)
             
         if min_expiration_days:
             params['min_expiration_days'] = int(min_expiration_days)
@@ -64,11 +62,13 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
             tickers=[ticker]
         elif ticker_list:
             tickers = screener_list.get(ticker_list)
+        else:
+            return None, False
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
             df = df.drop(['desired_premium', 'desired_moneyness','desired_min_delta','desired_max_delta','type','open_interest','volume','expiration_type','spread'], axis = 1) 
-            return dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True), False
+            return dbc.Table.from_dataframe(df, striped=True, bordered=True, id="screen-table", hover=True), False
         
         else:
             return None, True

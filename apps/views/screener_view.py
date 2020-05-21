@@ -15,7 +15,7 @@ LEFT_COLUMN = dbc.Jumbotron(
                             dbc.Label("Choose one"),
                             dbc.RadioItems(
                                 options=[
-                                    {"label": "SECURED PUT", "value": "PUT"},
+                                    {"label": "PUT", "value": "PUT"},
                                     {"label": "COVERED CALL", "value": "CALL"},
                                 ],
                                 value="PUT",
