@@ -15,9 +15,9 @@ table_mapping = {
     "mark": "PRICE",
     "underlying": "TICKER",
     "expiration": "EXPIRATION",
-    "days_to_expiration": "EXPIRATION DAYS",
+    "days_to_expiration": "DAYS",
     "returns": "RETURNS",
-    "breakeven": "POSITION",
+    "breakeven": "BREAK EVEN",
     "symbol" : "SYMBOL",										
 }
 

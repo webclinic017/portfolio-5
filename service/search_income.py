@@ -90,7 +90,7 @@ def income_finder(ticker, **kwargs):
             option.type = strike_detail["putCall"]
             option.days_to_expiration = strike_detail["daysToExpiration"]
             option.returns = "{:.2%}".format(
-                365 * option.mark / (current_stock_price * option.days_to_expiration)
+                365 * option.mark / (option.strike_price * option.days_to_expiration)
             )
             option.breakeven = option.strike_price - option.mark
             option.stock_price = round(float(current_stock_price), 2)

@@ -30,9 +30,8 @@ class Account_Positions:
             "underlying":"TICKER",
             "mark":"TICKER PRICE",
         }
-
         # Get All Open Positions
-        self.res = self.get_account_positions()
+        self.res = pd.DataFrame()
 
 
     def get_put_positions(self):
@@ -47,7 +46,7 @@ class Account_Positions:
             return intrinsic, extrinsic, ITM
     
        
-        res = self.res
+        res = self.get_account_positions()
         # Filter for puts
         isPut= res['option_type'] == PUT_CALL.PUT.value
         res_puts = res[isPut]
@@ -78,7 +77,7 @@ class Account_Positions:
             ITM = np.where(row["strikePrice"] < row["underlyingPrice"] , 'Y', 'N')
             return intrinsic, extrinsic, ITM
 
-        res = self.res
+        res = self.get_account_positions()
 
         # Filter for calls
         isCall = res['option_type'] == PUT_CALL.CALL.value  
@@ -103,7 +102,7 @@ class Account_Positions:
         for the symbol via Qouotes
         """
 
-        res = self.res
+        res = self.get_account_positions()
 
         # Filter for calls
         isEquity = res['type'] == "EQUITY"  
@@ -122,9 +121,13 @@ class Account_Positions:
         """ 
         Get open positions for a given account
         """
-        account = Account()
-        logging.debug(" Getting positions")
-        return account.get_positionsDF(account=ACCOUNT_NUMBER)
+
+        if self.res.empty:
+            account = Account()
+            logging.debug(" Getting positions")
+            self.res = account.get_positionsDF(account=ACCOUNT_NUMBER)
+
+        return self.res
         
 
     def __get_option_position_details(self, df):

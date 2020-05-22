@@ -4,6 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 from dash_table import DataTable
 import pandas as pd
+import logging
 
 from app import app
 from service.account_positions import Account_Positions
@@ -25,7 +26,7 @@ layout = html.Div(
         dbc.Row(
             dbc.Col(
                 dbc.Button(
-                    "Get Positions",
+                    "Open Positions",
                     color="primary",
                     className="float-right",
                     id="portfolio-btn",
@@ -33,10 +34,13 @@ layout = html.Div(
             ),
         ),
         dbc.Row(html.H4("PUTS"),),
+        html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="puts_table")),)]),
         dbc.Row(html.H4("CALLS"),),
+        html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="calls_table")),)]),
         dbc.Row(html.H4("STOCKS"),),
+        html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="stocks_table")),)]),
     ]
 )
@@ -53,16 +57,14 @@ layout = html.Div(
     ]
 )
 def on_button_click(n):
-    if n is None:
-        return None, None, None
-    else:
-        df_puts = positions.get_put_positions()
-        df_calls = positions.get_call_positions()
-        df_stocks = positions.get_stock_positions()
+    logging.info(" In on_button_click ")
+    df_puts = positions.get_put_positions()
+    df_calls = positions.get_call_positions()
+    df_stocks = positions.get_stock_positions()
 
-        return (
-            dbc.Table.from_dataframe(df_puts, striped=True, bordered=True),
-            dbc.Table.from_dataframe(df_calls, striped=True, bordered=True),
-            dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True),
-        )
+    return (
+        dbc.Table.from_dataframe(df_puts, striped=True, bordered=True),
+        dbc.Table.from_dataframe(df_calls, striped=True, bordered=True),
+        dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True),
+    )
 

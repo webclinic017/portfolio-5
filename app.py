@@ -5,7 +5,7 @@ from flask_caching import Cache
 import logging
 
 logging.basicConfig(filename="app.log",
-                    level=logging.DEBUG, format='%(asctime)s %(message)s')
+                    level=logging.INFO, format='%(asctime)s %(message)s')
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = [
