@@ -6,8 +6,7 @@ from broker.config import ACCOUNT_NUMBER
 import pandas as pd
 
 def get_transactions(
-    start_date=None, end_date=None, symbol=None, option_type=None, tran_type=None
-):
+    start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None):
     
     # Mapping column for UI display
     params_transactions = {
@@ -43,33 +42,42 @@ def get_transactions(
         end_date=end_date,
     )
 
-    df = df.filter(
-        [
-            "transactionDate",
-            "netAmount",
-            "transactionItem.instrument.symbol",
-            "transactionSubType",
-            "transactionItem.positionEffect",
-            "transactionItem.amount",
-            "transactionItem.price",
-            "transactionItem.instrument.underlyingSymbol",
-            "transactionItem.instrument.description",
-            "transactionItem.instrument.assetType",
-            "transactionItem.instrument.putCall",
-        ],
-        axis=1,
-    )
+    if not df.empty:
+        df = df.filter(
+            [
+                "transactionDate",
+                "netAmount",
+                "transactionItem.instrument.symbol",
+                "transactionSubType",
+                "transactionItem.positionEffect",
+                "transactionItem.amount",
+                "transactionItem.price",
+                "transactionItem.instrument.underlyingSymbol",
+                "transactionItem.instrument.description",
+                "transactionItem.instrument.assetType",
+                "transactionItem.instrument.putCall",
+            ],
+            axis=1,
+        )
 
-    # Change df['transactionDate'] string to remove timestamp
-    df['transactionDate'] = pd.to_datetime(df['transactionDate'], format="%Y-%m-%dT%H:%M:%S%z").dt.strftime("%m/%d/%y")
+        # Change df['transactionDate'] string to remove timestamp
+        df['transactionDate'] = pd.to_datetime(df['transactionDate'], format="%Y-%m-%dT%H:%M:%S%z").dt.strftime("%m/%d/%y")
 
-    if option_type:
-        isOptionType = df["transactionItem.instrument.putCall"] == option_type
-        df = df[isOptionType]
+        if instrument_type:
+            if instrument_type == "PUT" or instrument_type == "CALL":
+                # Filter for either PUT or CALL option types
+                isOptionType = (df["transactionItem.instrument.putCall"] == instrument_type)
+                df = df[isOptionType]
+            elif instrument_type == "EQUITY" or instrument_type == "OPTION":
+                # Filter for either EQUITY or OPTION asset types
+                isAssetType = (df["transactionItem.instrument.assetType"] == instrument_type)
+                df = df[isAssetType]
 
-    if tran_type:
-        isTranType = df["transactionSubType"] == tran_type
-        df = df[isTranType]
-    
-    df = df.rename(columns=params_transactions)
+        if tran_type:
+            isTranType = df["transactionSubType"] == tran_type
+            # Filter for Transaction sub type
+            df = df[isTranType]
+        
+        df = df.rename(columns=params_transactions)
+
     return df

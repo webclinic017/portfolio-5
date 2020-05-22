@@ -2,12 +2,15 @@ import dash
 import dash_auth
 import dash_bootstrap_components as dbc
 from flask_caching import Cache
+import logging
+
+logging.basicConfig(filename="app.log",
+                    level=logging.DEBUG, format='%(asctime)s %(message)s')
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = [
     ['hello', 'nishant']
 ]
-
 external_stylesheets=[dbc.themes.FLATLY]
 app = dash.Dash(__name__)
 

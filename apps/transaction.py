@@ -1,6 +1,7 @@
 from datetime import datetime as dt
 import pandas as pd
 import re
+import logging
 
 import dash
 import dash_bootstrap_components as dbc
@@ -68,13 +69,15 @@ TOP_COLUMN = dbc.Jumbotron(
                 dbc.Col(
                     dbc.FormGroup(
                         [
-                            dbc.Label("Option Type", html_for="example-email-grid"),
+                            dbc.Label("Instrument Type", html_for="example-email-grid"),
                             dbc.Select(
-                                id="option-type",
+                                id="instrument-type",
                                 options=[
                                     {"label": "ALL", "value": ""},
                                     {"label": "CALL", "value": "CALL"},
                                     {"label": "PUT", "value": "PUT"},
+                                    {"label": "EQUITY", "value": "EQUITY"},
+                                    {"label": "ALL OPTIONS", "value": "OPTION"},
                                 ],
                             ),
                         ],
@@ -133,24 +136,14 @@ TOP_COLUMN = dbc.Jumbotron(
 )
 
 SEARCH_RESULT = [
-    dbc.Row(
-        dbc.Alert(
-            "No Records returned the matching criteria",
-            id="transaction-message",
-            is_open=False,
-            duration=2000,
-            color="danger",
-        ),
-        className="mt-3",
-    ),
-    dbc.Row(html.Div(id="sum"), className="mb-3"),
-    dbc.Row(dbc.Spinner(html.Div(id="transaction-output")),),
+    dbc.Row([dbc.Col(dbc.Alert(html.Div(id="message"), id="transaction-message", is_open=False,))]),
+    dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="transaction-output")),)]),
 ]
 
 layout = html.Div(
     [
         dbc.Row(TOP_COLUMN, className="justify-content-center"), 
-        dbc.Row(SEARCH_RESULT, className="justify-content-center"),
+        dbc.Row(SEARCH_RESULT,),
     ],
 )
 
@@ -159,7 +152,7 @@ layout = html.Div(
     [
         Output("transaction-output", "children"),
         Output("transaction-message", "is_open"),
-        Output("sum", "children"),
+        Output("message", "children"),
     ],
     [
         Input("transaction-btn", "n_clicks"),
@@ -168,15 +161,18 @@ layout = html.Div(
     ],
     [
         State("transaction-ticker", "value"),
-        State("option-type", "value"),
+        State("instrument-type", "value"),
         State("tran-type", "value"),
     ],
 )
-def on_button_click(n, start_date, end_date, ticker, option_type, tran_type):
+def on_button_click(n, start_date, end_date, ticker, instrument_type, tran_type):
     if n is None:
         return None, False, ""
     else:
-        df = get_transactions(start_date, end_date, ticker, option_type, tran_type)
+        df = get_transactions(start_date, end_date, ticker, instrument_type, tran_type)
+        app.logger.debug("instrument_type is {}", instrument_type)
+        logging.debug("instrument_type is {}", instrument_type)
+        print("instrument_type is {}", instrument_type)
         if not df.empty:
             sum = round(df["TOTAL PRICE"].sum(), 2)
             sumText = 'Grand Total = "{}"'.format(sum)
@@ -191,6 +187,6 @@ def on_button_click(n, start_date, end_date, ticker, option_type, tran_type):
                 style_header=style_header,
                 style_data_conditional=style_data_conditional,
             )
-            return dt, False, sumText
+            return dt, True, sumText
         else:
-            return None, False, ""
+            return None, True, "No Records found"

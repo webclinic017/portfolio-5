@@ -14,7 +14,7 @@ TOP_COLUMN = dbc.Jumbotron(
                             dbc.Label("Choose one"),
                             dbc.RadioItems(
                                 options=[
-                                    {"label": "SECURED PUTs", "value": "PUT"},
+                                    {"label": "SECURED PUT", "value": "PUT"},
                                     {"label": "COVERED CALL", "value": "CALL"},
                                 ],
                                 value="PUT",
@@ -142,8 +142,9 @@ SEARCH_RESULT = [
             )
         ]
     ),
-    dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="screener-output")),)]),
+    html.Div(dbc.Spinner(html.Div(id="screener-output")))
 ]
+
 layout = html.Div(
     [dbc.Row(TOP_COLUMN, className="justify-content-center"), dbc.Row(SEARCH_RESULT, className="justify-content-center"),],
 )

@@ -51,6 +51,4 @@ def render_page_content(pathname):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="app.log",
-                    level=logging.DEBUG, format='%(asctime)s %(message)s')
     app.run_server(debug=True)
