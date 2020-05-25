@@ -128,16 +128,19 @@ TOP_COLUMN = dbc.Jumbotron(
 )
 
 SEARCH_RESULT = [
-    html.Div(
-        dbc.Alert(
-            "No Records returned the matching criteria",
-            id="alert-message",
-            is_open=False,
-            duration=2000,
-            color="danger",
-        ),
+    dbc.Col(
+        [
+            html.Div(
+                dbc.Alert(
+                    id="screener-message",
+                    is_open=False,
+                    duration=2000,
+                    color="danger",
+                ),
+            ),
+            html.Div(dbc.Spinner(html.Div(id="screener-output"))),
+        ]       
     ),
-    html.Div(dbc.Spinner(html.Div(id="screener-output"))),
 ]
 
 layout = html.Div(

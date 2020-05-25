@@ -22,7 +22,8 @@ layout = screener_view.layout
 
 @app.callback(
     [Output('screener-output', 'children'),
-    Output('alert-message', 'is_open'),],
+    Output("screener-message", "is_open"),
+    Output("screener-message", "children"),],
     [Input("screener-btn", "n_clicks")],
     [
         State('contract_type', 'value'),
@@ -38,7 +39,7 @@ layout = screener_view.layout
 )
 def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, min_delta, max_delta, premium,moneyness, ticker, ticker_list):
     if n is None:
-        return None, False
+        return None, False, ""
     else:
         params = {}
         func = None
@@ -66,7 +67,7 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
         elif ticker_list:
             tickers = screener_list.get(ticker_list)
         else:
-            return None, False
+            return None, True, "Enter Ticker or Select Watchlist"
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
@@ -83,7 +84,7 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
                     style_header=style_header,
                     style_data_conditional=style_data_conditional,
                 )
-            return dt, False
+            return dt, False, ""
             
         else:
-            return None, True
+            return None, True, "No Results Found"

@@ -136,14 +136,23 @@ TOP_COLUMN = dbc.Jumbotron(
 )
 
 SEARCH_RESULT = [
-    dbc.Row([dbc.Col(dbc.Alert(html.Div(id="message"), id="transaction-message", is_open=False,))]),
-    dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="transaction-output")),)]),
+    dbc.Col(
+        [
+            html.Div(
+                dbc.Alert(
+                    id="transaction-message",
+                    is_open=False,
+                ),
+            ),
+            html.Div(dbc.Spinner(html.Div(id="transaction-output"))),
+        ]       
+    ),
 ]
 
 layout = html.Div(
     [
         dbc.Row(TOP_COLUMN, className="justify-content-center"), 
-        dbc.Row(SEARCH_RESULT,),
+        dbc.Row(SEARCH_RESULT, className="justify-content-center"),
     ],
 )
 
@@ -152,7 +161,7 @@ layout = html.Div(
     [
         Output("transaction-output", "children"),
         Output("transaction-message", "is_open"),
-        Output("message", "children"),
+        Output("transaction-message", "children"),
     ],
     [
         Input("transaction-btn", "n_clicks"),
