@@ -165,10 +165,11 @@ layout = html.Div(
     ],
     [
         Input("transaction-btn", "n_clicks"),
-        Input("start-date-picker", "date"),
-        Input("end-date-picker", "date"),
+        
     ],
     [
+        State("start-date-picker", "date"),
+        State("end-date-picker", "date"),
         State("transaction-ticker", "value"),
         State("instrument-type", "value"),
         State("tran-type", "value"),
