@@ -125,7 +125,6 @@ TOP_COLUMN = dbc.Jumbotron(
                 dbc.Button(
                     "Search",
                     color="primary",
-                    outline=True,
                     className="float-right",
                     id="transaction-btn",
                 ),
