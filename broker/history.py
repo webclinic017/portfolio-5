@@ -155,7 +155,7 @@ class History(Base):
         self._data = self._api_response(url=url, params=data, verify=True)
 
         # return the response of the get request.
-        return self._data
+        return self._data['candles']
 
 
 
