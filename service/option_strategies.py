@@ -71,6 +71,6 @@ def watchlist_income(watch_list, params, func):
         df = df.append(df2, ignore_index=True)
 
     if not df.empty:
-        df = df.sort_values(by=['days_to_expiration','symbol'])
+        df = df.sort_values(by=['returns'], ascending=False)
         df = df.rename(columns=table_mapping)
     return df
