@@ -6,6 +6,7 @@ from broker.options import Options
 from broker.option_chain import OptionChain
 from broker.option import Option
 from utils.enums import PUT_CALL
+from utils.functions import formatter_percent, formatter_currency
 
 
 def income_finder(ticker, **kwargs):
@@ -81,25 +82,23 @@ def income_finder(ticker, **kwargs):
             option = Option()
             option.symbol = strike_detail["symbol"]
             option.underlying = ticker
-            option.mark = round(float(strike_detail["mark"]), 2)
+            option.mark = float(strike_detail["mark"])
             option.delta = strike_detail["delta"]
             option.volatility = strike_detail["volatility"]
             option.expiration_type = strike_detail["expirationType"]
             option.expiration = expiration_week[0]
-            option.strike_price = round(float(strike_detail["strikePrice"]), 2)
+            option.strike_price = float(strike_detail["strikePrice"])
             option.type = strike_detail["putCall"]
             option.days_to_expiration = strike_detail["daysToExpiration"]
-            option.returns = "{:.2%}".format(
-                365 * option.mark / (option.strike_price * option.days_to_expiration)
+            option.returns = formatter_percent (
+                365 * option.mark * 100/ (option.strike_price * option.days_to_expiration)
             )
             option.breakeven = option.strike_price - option.mark
-            option.stock_price = round(float(current_stock_price), 2)
+            option.stock_price = float(current_stock_price)
             option.open_interest = int(strike_detail["openInterest"])
             option.volume = int(strike_detail["totalVolume"])
 
-            option.spread = round(
-                float(strike_detail["ask"]) - float(strike_detail["bid"]), 2
-            )
+            option.spread = float(strike_detail["ask"]) - float(strike_detail["bid"])
             option.desired_premium = float(params["premium"])
             option.desired_moneyness = float(params["moneyness"])
             option.desired_min_delta = float(params["min_delta"])

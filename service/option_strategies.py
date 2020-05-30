@@ -5,6 +5,7 @@ from .checks import (
 )
 from datetime import datetime
 from .search_income import income_finder
+from utils.functions import formatter_currency_with_cents
 
  # Mapping column for UI display
 table_mapping = {
@@ -72,5 +73,10 @@ def watchlist_income(watch_list, params, func):
 
     if not df.empty:
         df = df.sort_values(by=['returns'], ascending=False)
+        df['strike_price'] = df['strike_price'].apply(formatter_currency_with_cents)
+        df['stock_price'] = df['stock_price'].apply(formatter_currency_with_cents)
+        df['mark'] = df['mark'].apply(formatter_currency_with_cents)
+        df['breakeven'] = df['breakeven'].apply(formatter_currency_with_cents)
+        
         df = df.rename(columns=table_mapping)
     return df
