@@ -318,10 +318,15 @@ def update_graph(ticker):
         endDate=endDate,
     )
 
-    # fig = go.Figure(price, x="datetime", y="close")
+    # Create a basic layout that names the chart and each axis.
+    layout = dict(
+            title=ticker,
+            xaxis=go.layout.XAxis(title=go.layout.xaxis.Title( text="Date"), rangeslider=dict (visible = False)),
+            yaxis=go.layout.YAxis(title=go.layout.yaxis.Title( text="Price $ - US Dollars")),
+            height=800
+    )
 
-    fig = go.Figure(
-        data=[
+    data=[
             go.Candlestick(
                 x=df["datetime"],
                 open=df["open"],
@@ -330,5 +335,8 @@ def update_graph(ticker):
                 close=df["close"],
             )
         ]
-    )
+
+    # set the data from our data frame
+    fig = go.Figure(data=data,layout=layout)
+
     return fig
