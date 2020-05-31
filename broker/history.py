@@ -1,8 +1,10 @@
 import requests
 import datetime
+import pandas as pd
 import broker.utils
 from .base import Base
 from .urls import GET_PRICE_HISTORY
+from utils.functions import date_from_milliseconds
 
 class History(Base):
 
@@ -156,6 +158,16 @@ class History(Base):
 
         # return the response of the get request.
         return self._data['candles']
+
+
+    def get_price_historyDF(self, symbol=None, periodType=None, period=None, startDate=None, endDate=None,
+                          frequencyType=None, frequency=None,  needExtendedHoursData=None):
+        res = self.get_price_history(symbol=symbol, periodType=periodType, period=period, startDate=startDate, endDate=endDate,
+                          frequencyType=frequencyType, frequency=frequency,  needExtendedHoursData=needExtendedHoursData)
+        
+        df = pd.json_normalize(res)
+        df ['datetime'] =  df ['datetime'].apply(date_from_milliseconds) 
+        return df
 
 
 

@@ -1,22 +1,33 @@
 import pandas as pd
+from datetime import datetime as dt
+from datetime import timedelta
+import logging
 
 import dash
 import dash_bootstrap_components as dbc
+import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 from dash_table import DataTable
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 from app import app
 from utils.constants import screener_list
 from utils.constants import style_cell, style_header, style_data_conditional
+from service.technical_analysis import get_RSI
+from broker.history import History
 
 from service.option_strategies import (
     watchlist_income,
     short_put,
     short_call,
     long_put,
-    long_call
+    long_call,
 )
+
+df = pd.DataFrame()
 
 TOP_COLUMN = dbc.Jumbotron(
     [
@@ -148,14 +159,12 @@ SEARCH_RESULT = [
         [
             html.Div(
                 dbc.Alert(
-                    id="screener-message",
-                    is_open=False,
-                    duration=2000,
-                    color="danger",
+                    id="screener-message", is_open=False, duration=2000, color="danger",
                 ),
             ),
             html.Div(dbc.Spinner(html.Div(id="screener-output"))),
-        ]       
+            html.Div(id="chart-output"),
+        ]
     ),
 ]
 
@@ -166,50 +175,65 @@ layout = html.Div(
     ],
 )
 
+
 @app.callback(
-    [Output('screener-output', 'children'),
-    Output("screener-message", "is_open"),
-    Output("screener-message", "children"),],
+    [
+        Output("screener-output", "children"),
+        Output("screener-message", "is_open"),
+        Output("screener-message", "children"),
+    ],
     [Input("screener-btn", "n_clicks")],
     [
-        State('contract_type', 'value'),
-        State('min_expiration_days', 'value'),
-        State('max_expiration_days', 'value'),
-        State('min_delta', 'value'),
-        State('max_delta', 'value'),
-        State('premium', 'value'),
-        State('moneyness', 'value'),
-        State('ticker', 'value'),
-        State('ticker_list', 'value'),
-    ]
+        State("contract_type", "value"),
+        State("min_expiration_days", "value"),
+        State("max_expiration_days", "value"),
+        State("min_delta", "value"),
+        State("max_delta", "value"),
+        State("premium", "value"),
+        State("moneyness", "value"),
+        State("ticker", "value"),
+        State("ticker_list", "value"),
+    ],
 )
-def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, min_delta, max_delta, premium,moneyness, ticker, ticker_list):
+def on_button_click(
+    n,
+    contract_type,
+    min_expiration_days,
+    max_expiration_days,
+    min_delta,
+    max_delta,
+    premium,
+    moneyness,
+    ticker,
+    ticker_list,
+):
     if n is None:
         return None, False, ""
     else:
+        global df
         params = {}
         func = None
-   
+
         if contract_type == "PUT":
             func = short_put
         else:
             func = short_call
-            
+
         if min_expiration_days:
-            params['min_expiration_days'] = int(min_expiration_days)
+            params["min_expiration_days"] = int(min_expiration_days)
         if max_expiration_days:
-            params['max_expiration_days'] = int(max_expiration_days)
+            params["max_expiration_days"] = int(max_expiration_days)
         if min_delta:
-            params['min_delta'] = float(min_delta)
+            params["min_delta"] = float(min_delta)
         if max_delta:
-            params['max_delta'] = float(max_delta)
+            params["max_delta"] = float(max_delta)
         if premium:
-            params['premium'] = premium
+            params["premium"] = premium
         if moneyness:
-            params['moneyness'] = moneyness
-        
+            params["moneyness"] = moneyness
+
         if ticker:
-            tickers=[ticker]
+            tickers = [ticker]
         elif ticker_list:
             tickers = screener_list.get(ticker_list)
         else:
@@ -217,20 +241,90 @@ def on_button_click(n, contract_type, min_expiration_days, max_expiration_days, 
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
-            df = df.drop(['desired_premium', 'desired_moneyness','desired_min_delta','desired_max_delta','type','open_interest','volume','expiration_type','spread'], axis = 1) 
-        
+            df = df.drop(
+                [
+                    "desired_premium",
+                    "desired_moneyness",
+                    "desired_min_delta",
+                    "desired_max_delta",
+                    "type",
+                    "open_interest",
+                    "volume",
+                    "expiration_type",
+                    "spread",
+                ],
+                axis=1,
+            )
+
             dt = DataTable(
-                    id="table",
-                    columns=[{"name": i, "id": i} for i in df.columns],
-                    data=df.to_dict("records"),
-                    page_size=10,
-                    sort_action="native",
-                    filter_action="native",
-                    style_cell=style_cell,
-                    style_header=style_header,
-                    style_data_conditional=style_data_conditional,
-                )
+                id="screener-table",
+                columns=[{"name": i, "id": i} for i in df.columns],
+                data=df.to_dict("records"),
+                page_size=10,
+                sort_action="native",
+                filter_action="native",
+                row_selectable="single",
+                style_cell=style_cell,
+                style_header=style_header,
+                style_data_conditional=style_data_conditional,
+                tooltip_data=[
+                    {
+                        c: {"type": "markdown", "value": create_tooltip(r)}
+                        for c in df.columns
+                    }
+                    for r in df[df.columns[1]].values
+                ],
+            )
             return dt, False, ""
-            
+
         else:
             return None, True, "No Results Found"
+
+
+def create_tooltip(ticker):
+    rsi = 14
+    return f"RSI, {rsi}."
+
+
+@app.callback(
+    Output("chart-output", "children"), [Input("screener-table", "selected_rows")],
+)
+def show_details(selected_rows):
+    if selected_rows:
+        ticker = df.loc[selected_rows, ["TICKER"]].to_numpy()
+        # Extract string from numpy
+        ticker = ticker[0,0]
+
+        fig = update_graph(ticker)
+        return dcc.Graph(figure=fig)
+
+
+def update_graph(ticker):
+
+    endDate = dt.now()
+    startDate = endDate - timedelta(days=45)
+
+    history = History()
+    df = history.get_price_historyDF(
+        symbol=ticker,
+        periodType="month",
+        frequencyType="daily",
+        frequency=1,
+        startDate=startDate,
+        endDate=endDate,
+    )
+
+    # fig = go.Figure(price, x="datetime", y="close")
+
+    fig = go.Figure(
+        data=[
+            go.Candlestick(
+                x=df["datetime"],
+                open=df["open"],
+                high=df["high"],
+                low=df["low"],
+                close=df["close"],
+            )
+        ]
+    )
+    return fig
