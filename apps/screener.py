@@ -291,15 +291,19 @@ def create_tooltip(ticker):
 )
 def show_details(selected_rows):
     if selected_rows:
-        ticker = df.loc[selected_rows, ["TICKER"]].to_numpy()
-        # Extract string from numpy
-        ticker = ticker[0,0]
+        # Dash passes a list for selected row, get the 1st value
+        selected_row = selected_rows[0]
+
+        # Get the ticker symbol from dataframe by passing selected row and column 2 which has the tickers
+        ticker = df.iat[selected_row,1]
 
         fig = update_graph(ticker)
         return dcc.Graph(figure=fig)
 
 
 def update_graph(ticker):
+
+    logging.info(f"{ticker}")
 
     endDate = dt.now()
     startDate = endDate - timedelta(days=45)
