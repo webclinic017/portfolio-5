@@ -11,13 +11,14 @@ from dash.dependencies import Input, Output, State
 from dash_table import DataTable
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 from app import app
 from utils.constants import screener_list
 from utils.constants import style_cell, style_header, style_data_conditional
-from service.technical_analysis import get_RSI
 from broker.history import History
+from service.technical_analysis import get_analysis
 
 from service.option_strategies import (
     watchlist_income,
@@ -162,8 +163,12 @@ SEARCH_RESULT = [
                     id="screener-message", is_open=False, duration=2000, color="danger",
                 ),
             ),
+            dbc.Modal(
+                [dbc.ModalHeader("Charts"), dbc.ModalBody(id="chart-output",),],
+                id="modal-chart",
+                size="xl",
+            ),
             html.Div(dbc.Spinner(html.Div(id="screener-output"))),
-            html.Div(id="chart-output"),
         ]
     ),
 ]
@@ -267,13 +272,6 @@ def on_button_click(
                 style_cell=style_cell,
                 style_header=style_header,
                 style_data_conditional=style_data_conditional,
-                tooltip_data=[
-                    {
-                        c: {"type": "markdown", "value": create_tooltip(r)}
-                        for c in df.columns
-                    }
-                    for r in df[df.columns[1]].values
-                ],
             )
             return dt, False, ""
 
@@ -281,13 +279,9 @@ def on_button_click(
             return None, True, "No Results Found"
 
 
-def create_tooltip(ticker):
-    rsi = 14
-    return f"RSI, {rsi}."
-
-
 @app.callback(
-    Output("chart-output", "children"), [Input("screener-table", "selected_rows")],
+    [Output("chart-output", "children"), Output("modal-chart", "is_open"),],
+    [Input("screener-table", "selected_rows")],
 )
 def show_details(selected_rows):
     if selected_rows:
@@ -295,10 +289,13 @@ def show_details(selected_rows):
         selected_row = selected_rows[0]
 
         # Get the ticker symbol from dataframe by passing selected row and column 2 which has the tickers
-        ticker = df.iat[selected_row,1]
+        ticker = df.iat[selected_row, 1]
 
         fig = update_graph(ticker)
-        return dcc.Graph(figure=fig)
+        return dcc.Graph(figure=fig), True
+
+    else:
+        return "", False
 
 
 def update_graph(ticker):
@@ -306,7 +303,7 @@ def update_graph(ticker):
     logging.info(f"{ticker}")
 
     endDate = dt.now()
-    startDate = endDate - timedelta(days=45)
+    startDate = endDate - timedelta(days=60)
 
     history = History()
     df = history.get_price_historyDF(
@@ -318,25 +315,41 @@ def update_graph(ticker):
         endDate=endDate,
     )
 
-    # Create a basic layout that names the chart and each axis.
-    layout = dict(
-            title=ticker,
-            xaxis=go.layout.XAxis(title=go.layout.xaxis.Title( text="Date"), rangeslider=dict (visible = False)),
-            yaxis=go.layout.YAxis(title=go.layout.yaxis.Title( text="Price $ - US Dollars")),
-            height=800
+    # Technical analysis
+    df = get_analysis(df)
+
+    fig = make_subplots(
+        rows=3,
+        cols=1,
+        row_heights=[0.6, 0.2, 0.2],
+        shared_xaxes=True,
+        vertical_spacing=0.02,
     )
 
-    data=[
-            go.Candlestick(
-                x=df["datetime"],
-                open=df["open"],
-                high=df["high"],
-                low=df["low"],
-                close=df["close"],
-            )
-        ]
+    fig.add_trace(
+        go.Candlestick(
+            x=df["datetime"],
+            open=df["open"],
+            high=df["high"],
+            low=df["low"],
+            close=df["close"],
+            name="Price",
+        ),
+        row=1,
+        col=1,
+    )
 
-    # set the data from our data frame
-    fig = go.Figure(data=data,layout=layout)
+    fig.add_trace(go.Scatter(x=df["datetime"], y=df["rsi"], name="rsi"), row=2, col=1)
+    fig.add_trace(go.Scatter(x=df["datetime"], y=df["real"], name="real"), row=3, col=1)
+
+    # Update yaxis properties
+    fig.update_yaxes(title_text="Price", showgrid=False, row=1, col=1)
+    fig.update_yaxes(title_text="RSI", showgrid=False, row=2, col=1)
+    fig.update_yaxes(title_text="Real", showgrid=False, row=3, col=1)
+
+    fig.update(layout_xaxis_rangeslider_visible=False)
+    fig.update_layout(
+        height=800, title=ticker,
+    )
 
     return fig
