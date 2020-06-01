@@ -28,7 +28,7 @@ def get_analysis(df):
  
     analysis['rsi'] = ta.RSI(df.close, RSI_PERIOD).apply(formatter_number)
     analysis['real'] = ta.DX(df.high, df.low, df.close, DX_PERIOD).apply(formatter_number)
-    analysis['macd'], analysis['macdsignal'], analysis['macdsignal'] = ta.MACD(df.close, fastperiod=MACD_FAST, slowperiod=MACD_SLOW, signalperiod=MACD_SIGNAL)
+    analysis['macd'], analysis['macdsignal'], analysis['macdhist'] = ta.MACD(df.close, fastperiod=MACD_FAST, slowperiod=MACD_SLOW, signalperiod=MACD_SIGNAL)
     
     return analysis
    

@@ -303,7 +303,7 @@ def update_graph(ticker):
     logging.info(f"{ticker}")
 
     endDate = dt.now()
-    startDate = endDate - timedelta(days=60)
+    startDate = endDate - timedelta(days=120)
 
     history = History()
     df = history.get_price_historyDF(
@@ -323,7 +323,7 @@ def update_graph(ticker):
         cols=1,
         row_heights=[0.6, 0.2, 0.2],
         shared_xaxes=True,
-        vertical_spacing=0.02,
+        vertical_spacing=0.05,
     )
 
     fig.add_trace(
@@ -339,17 +339,73 @@ def update_graph(ticker):
         col=1,
     )
 
+    # RSI scatter
     fig.add_trace(go.Scatter(x=df["datetime"], y=df["rsi"], name="rsi"), row=2, col=1)
-    fig.add_trace(go.Scatter(x=df["datetime"], y=df["real"], name="real"), row=3, col=1)
+    
+    # shape defined programatically
+    fig.add_shape(line_color='green',
+            type="line",
+            xref='paper',
+            x0=0,
+            y0=30.0,
+            x1=1,
+            y1=30.0,
+            yref="y2",
+
+        )
+    
+    fig.add_shape(line_color='red',
+            type="line",
+            xref='paper',
+            x0=0,
+            y0=70.0,
+            x1=1,
+            y1=70.0,
+            yref="y2",
+
+        )
+
+    fig.add_annotation(
+            y=35,
+            text="OverSold",
+            showarrow=False,
+            xref='paper',
+            yref="y2",
+        )
+
+    fig.add_annotation(
+            y=75,
+            text="OverBought",
+            showarrow=False,
+            xref='paper',
+            yref="y2",
+    )
+    
+    # MACD
+    fig.add_trace(go.Scatter(x=df["datetime"], y=df["macd"], name="macd"), row=3, col=1)
+    fig.add_trace(go.Scatter(x=df["datetime"], y=df["macdsignal"], name="signal"), row=3, col=1)
+    fig.add_trace(go.Bar(x=df["datetime"], y=df["macdsignal"], name="macdhistogram"), row=3, col=1)
+
+
+    fig.add_shape(line_color='blue',
+            type="line",
+            xref='paper',
+            x0=0,
+            y0=0,
+            x1=1,
+            y1=0,
+            yref="y3",
+
+        )
 
     # Update yaxis properties
-    fig.update_yaxes(title_text="Price", showgrid=False, row=1, col=1)
+    fig.update_yaxes(title_text="STOCK PRICE", showgrid=False, row=1, col=1)
     fig.update_yaxes(title_text="RSI", showgrid=False, row=2, col=1)
-    fig.update_yaxes(title_text="Real", showgrid=False, row=3, col=1)
+    fig.update_yaxes(title_text="MACD", showgrid=False, row=3, col=1)
 
     fig.update(layout_xaxis_rangeslider_visible=False)
     fig.update_layout(
-        height=800, title=ticker,
+        height=800, title=ticker, template="plotly_white",
     )
 
     return fig
