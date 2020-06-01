@@ -326,6 +326,7 @@ def update_graph(ticker):
         vertical_spacing=0.05,
     )
 
+    # Stock price Candelstick -  Chart 1
     fig.add_trace(
         go.Candlestick(
             x=df["datetime"],
@@ -333,13 +334,23 @@ def update_graph(ticker):
             high=df["high"],
             low=df["low"],
             close=df["close"],
-            name="Price",
+            name="Candle",
         ),
         row=1,
         col=1,
     )
 
-    # RSI scatter
+    fig.add_trace(
+        go.Scatter(
+            x=df["datetime"],
+            y=df["close"],
+            name="Close Price",
+        ),
+        row=1,
+        col=1,
+    )
+
+    # RSI scatter - Chart 2
     fig.add_trace(go.Scatter(x=df["datetime"], y=df["rsi"], name="rsi"), row=2, col=1)
     
     # shape defined programatically
@@ -381,10 +392,10 @@ def update_graph(ticker):
             yref="y2",
     )
     
-    # MACD
-    fig.add_trace(go.Scatter(x=df["datetime"], y=df["macd"], name="macd"), row=3, col=1)
-    fig.add_trace(go.Scatter(x=df["datetime"], y=df["macdsignal"], name="signal"), row=3, col=1)
-    fig.add_trace(go.Bar(x=df["datetime"], y=df["macdsignal"], name="macdhistogram"), row=3, col=1)
+    # MACD  - Chart 3
+    fig.add_trace(go.Scatter(x=df["datetime"], y=df["macd"], name="macd", line=dict(color='royalblue'),), row=3, col=1)
+    fig.add_trace(go.Scatter(x=df["datetime"], y=df["macdsignal"], name="signal", line=dict(color='red')), row=3, col=1)
+    fig.add_trace(go.Bar(x=df["datetime"], y=df["macdhist"], name="macdhistogram"), row=3, col=1)
 
 
     fig.add_shape(line_color='blue',
