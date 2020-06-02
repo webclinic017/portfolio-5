@@ -246,21 +246,6 @@ def on_button_click(
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
-            df = df.drop(
-                [
-                    "desired_premium",
-                    "desired_moneyness",
-                    "desired_min_delta",
-                    "desired_max_delta",
-                    "type",
-                    "open_interest",
-                    "volume",
-                    "expiration_type",
-                    "spread",
-                ],
-                axis=1,
-            )
-
             dt = DataTable(
                 id="screener-table",
                 columns=[{"name": i, "id": i} for i in df.columns],
