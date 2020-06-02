@@ -26,20 +26,20 @@ layout = html.Div(
         dbc.Row(
             dbc.Col(
                 dbc.Button(
-                    "Open Positions",
+                    "Show Positions",
                     color="primary",
                     className="float-right",
                     id="portfolio-btn",
                 ),
             ),
         ),
-        dbc.Row(html.H4("PUTS"),),
+        dbc.Row(html.H3(dbc.Badge("PUTS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="puts_table")),)]),
-        dbc.Row(html.H4("CALLS"),),
+        dbc.Row(html.H3(dbc.Badge("CALLS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="calls_table")),)]),
-        dbc.Row(html.H4("STOCKS"),),
+        dbc.Row(html.H3(dbc.Badge("STOCKS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="stocks_table")),)]),
     ]

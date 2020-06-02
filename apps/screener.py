@@ -305,6 +305,7 @@ def update_graph(ticker):
     endDate = dt.now()
     startDate = endDate - timedelta(days=120)
 
+    # Retrieve Prices and volumes for a ticker
     history = History()
     df = history.get_price_historyDF(
         symbol=ticker,
@@ -315,7 +316,7 @@ def update_graph(ticker):
         endDate=endDate,
     )
 
-    # Technical analysis
+    # Get Technical analysis data in df
     df = get_analysis(df)
 
     fig = make_subplots(
@@ -343,8 +344,28 @@ def update_graph(ticker):
     fig.add_trace(
         go.Scatter(
             x=df["datetime"],
-            y=df["close"],
-            name="Close Price",
+            y=df["sma10"],
+            name="10 day simple average",
+        ),
+        row=1,
+        col=1,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=df["datetime"],
+            y=df["ema20"],
+            name="20 day exp average",
+        ),
+        row=1,
+        col=1,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=df["datetime"],
+            y=df["ema30"],
+            name="30 day exp average",
         ),
         row=1,
         col=1,
@@ -409,14 +430,14 @@ def update_graph(ticker):
 
         )
 
-    # Update yaxis properties
+    # Update yaxis properties to show chart titles
     fig.update_yaxes(title_text="STOCK PRICE", showgrid=False, row=1, col=1)
     fig.update_yaxes(title_text="RSI", showgrid=False, row=2, col=1)
     fig.update_yaxes(title_text="MACD", showgrid=False, row=3, col=1)
 
     fig.update(layout_xaxis_rangeslider_visible=False)
     fig.update_layout(
-        height=800, title=ticker, template="plotly_white",
+        height=800, title=ticker, template="plotly_white", showlegend=False,
     )
 
     return fig

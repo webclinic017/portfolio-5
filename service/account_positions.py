@@ -8,6 +8,7 @@ from broker.quotes import Quotes
 from broker.orders import Order
 from broker.config import ACCOUNT_NUMBER
 from utils.enums import PUT_CALL
+from utils.functions import formatter_number_2_digits
 
 class Account_Positions:
 
@@ -23,6 +24,7 @@ class Account_Positions:
             "intrinsic":"INTRINSIC",
             "extrinsic":"EXTRINSIC",
             "ITM":"ITM",
+            "theta":"THETA"
         }
 
         self.params_stocks = {
@@ -30,6 +32,7 @@ class Account_Positions:
             "underlying":"TICKER",
             "mark":"TICKER PRICE",
         }
+
         # Get All Open Positions
         self.res = pd.DataFrame()
 
@@ -142,11 +145,12 @@ class Account_Positions:
 
             quotes = Quotes()
             res = quotes.get_quotes(row['symbol'])
-            return res['underlyingPrice'], res['strikePrice'], res['lastPrice']
+            return res['underlyingPrice'], res['strikePrice'], res['lastPrice'], res['theta']
 
         # Invoke getQuotesForSymbol for each symbol
         res = pd.DataFrame()
-        res[['underlyingPrice','strikePrice','lastPrice']] = df.apply(get_quotes, axis=1 ,result_type="expand")
+        res[['underlyingPrice','strikePrice','lastPrice','theta']] = df.apply(get_quotes, axis=1 ,result_type="expand")
+        res['theta'] = res['theta'].apply(formatter_number_2_digits)
         df = df.join(res)
         return df
 

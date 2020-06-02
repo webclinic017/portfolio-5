@@ -6,7 +6,7 @@ import numpy as np
 import talib as ta
 
 from broker.history import History
-from utils.functions import formatter_number
+from utils.functions import formatter_number, formatter_number_2_digits
 
 # Technical Analysis
 SMA_FAST = 50
@@ -27,8 +27,10 @@ def get_analysis(df):
     analysis = df
  
     analysis['rsi'] = ta.RSI(df.close, RSI_PERIOD).apply(formatter_number)
-    analysis['real'] = ta.DX(df.high, df.low, df.close, DX_PERIOD).apply(formatter_number)
     analysis['macd'], analysis['macdsignal'], analysis['macdhist'] = ta.MACD(df.close, fastperiod=MACD_FAST, slowperiod=MACD_SLOW, signalperiod=MACD_SIGNAL)
-    
+    analysis['sma10'] = ta.SMA(df.close, 10).apply(formatter_number_2_digits)
+    analysis['ema20'] = ta.EMA(df.close, 20).apply(formatter_number_2_digits)
+    analysis['ema30'] = ta.EMA(df.close, 30).apply(formatter_number_2_digits)
+
     return analysis
    
