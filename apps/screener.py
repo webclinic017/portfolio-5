@@ -273,11 +273,17 @@ def show_details(selected_rows):
         # Dash passes a list for selected row, get the 1st value
         selected_row = selected_rows[0]
 
-        # Get the ticker symbol from dataframe by passing selected row and column 2 which has the tickers
-        ticker = df.iat[selected_row, 1]
+        # Get the ticker symbol from dataframe by passing selected row and column which has the tickers
+        ticker = df.iloc[selected_row].at['TICKER']
 
-        fig = update_graph(ticker)
-        return dcc.Graph(figure=fig), True
+        fig, info_text = update_graph(ticker)
+        chart = html.Div(
+                [
+                    dbc.Alert(info_text, color="primary"),
+                    dcc.Graph(figure=fig),
+                ]
+        )
+        return chart, True
 
     else:
         return "", False
@@ -287,22 +293,8 @@ def update_graph(ticker):
 
     logging.info(f"{ticker}")
 
-    endDate = dt.now()
-    startDate = endDate - timedelta(days=120)
-
-    # Retrieve Prices and volumes for a ticker
-    history = History()
-    df = history.get_price_historyDF(
-        symbol=ticker,
-        periodType="month",
-        frequencyType="daily",
-        frequency=1,
-        startDate=startDate,
-        endDate=endDate,
-    )
-
     # Get Technical analysis data in df
-    df = get_analysis(df)
+    df, low_30, high_30 = get_analysis(ticker)
 
     fig = make_subplots(
         rows=3,
@@ -355,6 +347,45 @@ def update_graph(ticker):
         row=1,
         col=1,
     )
+
+     # shape defined programatically
+    fig.add_shape(line_color='green',
+            type="line",
+            xref='paper',
+            x0=0,
+            y0=low_30,
+            x1=1,
+            y1=low_30,
+            yref="y1",
+
+        )
+    
+    fig.add_shape(line_color='red',
+            type="line",
+            xref='paper',
+            x0=0,
+            y0=high_30,
+            x1=1,
+            y1=high_30,
+            yref="y1",
+
+        )
+
+    fig.add_annotation(
+            y=high_30 + 1,
+            text="30 Day High : " + str(high_30),
+            showarrow=False,
+            xref='paper',
+            yref="y1",
+        )
+
+    fig.add_annotation(
+            y=low_30 + 1,
+            text="30 Day Low : " + str(low_30),
+            showarrow=False,
+            xref='paper',
+            yref="y1",
+        )
 
     # RSI scatter - Chart 2
     fig.add_trace(go.Scatter(x=df["datetime"], y=df["rsi"], name="rsi"), row=2, col=1)
@@ -425,4 +456,6 @@ def update_graph(ticker):
         height=800, title=ticker, template="plotly_white", showlegend=False,
     )
 
-    return fig
+    info_text = f" 30 Day Period : Low - {low_30} and High - {high_30} "
+
+    return fig, info_text
