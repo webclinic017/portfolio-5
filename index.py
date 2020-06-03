@@ -4,7 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from app import app, server
-from apps import portfolio, screener, transaction
+from apps import portfolio, screener, transaction, income_finder
 
 import logging
 
@@ -17,9 +17,10 @@ CONTENT_STYLE = {
 }
 navbar = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Portfolio", href="/page-1", id="page-1-link")),
+        dbc.NavItem(dbc.NavLink("Income Finder", href="/page-1", id="page-1-link")),
         dbc.NavItem(dbc.NavLink("Screener", href="/page-2", id="page-2-link")),
-        dbc.NavItem(dbc.NavLink("Transactions", href="/page-3", id="page-3-link")),
+        dbc.NavItem(dbc.NavLink("Portfolio", href="/page-3", id="page-3-link")),
+        dbc.NavItem(dbc.NavLink("Transactions", href="/page-4", id="page-4-link")),
     ],
     brand="Portfolio",
     brand_href="#",
@@ -35,10 +36,12 @@ app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
     if pathname in ["/", "/page-1"]:
-        return portfolio.layout
+        return income_finder.layout
     elif pathname == "/page-2":
         return screener.layout
     elif pathname == "/page-3":
+        return portfolio.layout
+    elif pathname == "/page-4":
         return transaction.layout
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(

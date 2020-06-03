@@ -2,6 +2,7 @@ from datetime import datetime as dt
 from datetime import timedelta
 import pandas as pd
 import logging
+from statistics import mean 
 
 import numpy as np
 import talib as ta
@@ -50,8 +51,9 @@ def get_analysis(ticker, startDate=None, endDate=None):
     df['ema30'] = ta.EMA(df.close, 30).apply(formatter_number_2_digits)
     low_30 = min(df.low.tail(30))
     high_30 = max(df.high.tail(30))
+    mean_30 = formatter_number_2_digits(mean(df.close.tail(30)))
 
     logging.info("low_30 %s high_30 %s", low_30, high_30)
 
-    return df, low_30, high_30
+    return df, low_30, high_30, mean_30
    
