@@ -12,7 +12,7 @@ def update_graph(ticker):
     logging.info(f"{ticker}")
 
     # Get Technical analysis data in df
-    df, low_30, high_30, mean_30 = get_analysis(ticker)
+    df, low_period, high_period, mean_period = get_analysis(ticker)
 
     logging.info("end date is %s", df.iloc[-1].at['datetime'])
     logging.info("start date is %s", df.iloc[-21].at['datetime'])
@@ -42,7 +42,7 @@ def update_graph(ticker):
     fig.add_trace(
         go.Scatter(
             x=df["datetime"],
-            y=df["sma10"],
+            y=df["short_mavg"],
             name="10 day simple average",
         ),
         row=1,
@@ -52,7 +52,7 @@ def update_graph(ticker):
     fig.add_trace(
         go.Scatter(
             x=df["datetime"],
-            y=df["ema20"],
+            y=df["long_mavg_1"],
             name="20 day exp average",
         ),
         row=1,
@@ -62,7 +62,7 @@ def update_graph(ticker):
     fig.add_trace(
         go.Scatter(
             x=df["datetime"],
-            y=df["ema30"],
+            y=df["long_mavg_2"],
             name="30 day exp average",
         ),
         row=1,
@@ -76,9 +76,9 @@ def update_graph(ticker):
             xref='x1',
             yref="y1",
             x0=df.iloc[-21].at['datetime'],
-            y0=low_30,
+            y0=low_period,
             x1=df.iloc[-1].at['datetime'],
-            y1=low_30,
+            y1=low_period,
            
 
         )
@@ -88,24 +88,24 @@ def update_graph(ticker):
             xref='x1',
             yref="y1",
             x0=df.iloc[-21].at['datetime'],
-            y0=high_30,
+            y0=high_period,
             x1=df.iloc[-1].at['datetime'],
-            y1=high_30,
+            y1=high_period,
         )
 
     fig.add_annotation(
-            y=high_30 + 2,
+            y=high_period + 2,
             x=df.iloc[-21].at['datetime'],
-            text="30 Day High : " + str(high_30),
+            text="30 Day High : " + str(high_period),
             showarrow=False,
             xref='x1',
             yref="y1",
         )
 
     fig.add_annotation(
-            y=low_30 + 2,
+            y=low_period + 2,
             x=df.iloc[-21].at['datetime'],
-            text="30 Day Low : " + str(low_30),
+            text="30 Day Low : " + str(low_period),
             showarrow=False,
             xref='x1',
             yref="y1",
@@ -191,6 +191,6 @@ def update_graph(ticker):
         height=800, title=ticker, template="plotly_white", showlegend=False,
     )
 
-    info_text = f" Average Close Price for 30 Day Period : {mean_30} "
+    info_text = f" Average Close Price for 30 Day Period : {mean_period} "
 
     return fig, info_text
