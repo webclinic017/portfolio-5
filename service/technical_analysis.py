@@ -72,8 +72,7 @@ def get_crossovers(df):
 
     df['signal'][LONG_MAVG2_PERIOD:] = np.where(df['short_mavg'][LONG_MAVG2_PERIOD:] > df['long_mavg_2'][LONG_MAVG2_PERIOD:], 1.0, 0.0)
     df['crossover'] = df['signal'].diff()
-
-    # is_signal = df['crossover'] != 0 or df['crossover'].notnull()
+    
     is_signal = df['crossover'] != 0
     signals = df[is_signal]
     signals = signals.dropna()
