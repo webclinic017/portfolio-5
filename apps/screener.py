@@ -13,6 +13,7 @@ from dash.dependencies import Input, Output, State
 from app import app
 
 from service.account_transactions import get_transactions
+from service.chart_helper import update_graph
 
 TOP_COLUMN = dbc.Jumbotron(
     [
@@ -94,5 +95,17 @@ layout = html.Div(
     ],
 )
 def on_button_click(n, ticker, ticker_list):
-
-    return None, None, False
+    if n is None:
+        return None, False, ""
+    else:
+        if ticker:
+            fig, info_text = update_graph(ticker)
+            chart = html.Div(
+                    [
+                        dbc.Alert(info_text, color="primary"),
+                        dcc.Graph(figure=fig),
+                    ]
+            )
+            return chart, False, ""
+        else:
+            return None, True, "No Results Found"
