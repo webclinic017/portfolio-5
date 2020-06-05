@@ -3,7 +3,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from datetime import timedelta
+
 from service.technical_analysis import get_analysis
+from broker.history import History
+
+from datetime import datetime as dt
+from datetime import timedelta
 
 
 
@@ -11,8 +17,22 @@ def update_graph(ticker):
 
     logging.info(f"{ticker}")
 
+    endDate = dt.now()
+    startDate = endDate - timedelta(days=120)
+
+    # Retrieve Prices and volumes for a ticker
+    history = History()
+    df = history.get_price_historyDF(
+        symbol=ticker,
+        periodType="month",
+        frequencyType="daily",
+        frequency=1, 
+        startDate=startDate,
+        endDate=endDate,
+    )
+
     # Get Technical analysis data in df
-    df, low_period, high_period, mean_period = get_analysis(ticker)
+    df, low_period, high_period, mean_period = get_analysis(df)
 
     logging.info("end date is %s", df.iloc[-1].at['datetime'])
     logging.info("start date is %s", df.iloc[-21].at['datetime'])

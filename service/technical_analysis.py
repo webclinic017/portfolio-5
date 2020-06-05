@@ -1,5 +1,3 @@
-from datetime import datetime as dt
-from datetime import timedelta
 import pandas as pd
 import logging
 from statistics import mean 
@@ -7,7 +5,6 @@ from statistics import mean
 import numpy as np
 import talib as ta
 
-from broker.history import History
 from utils.functions import formatter_number, formatter_number_2_digits
 
 # Technical Analysis
@@ -31,24 +28,8 @@ LONG_MAVG2_PERIOD = 30
 PERIOD = 30
 
 
-def get_analysis(ticker, startDate=None, endDate=None):
-
-    if not endDate:
-        endDate = dt.now()
+def get_analysis(df):
     
-    if not startDate:
-        startDate = endDate - timedelta(days=120)
-
-    # Retrieve Prices and volumes for a ticker
-    history = History()
-    df = history.get_price_historyDF(
-        symbol=ticker,
-        periodType="month",
-        frequencyType="daily",
-        frequency=1, 
-        startDate=startDate,
-        endDate=endDate,
-    )
     df['signal'] = 0.0
 
     df['rsi'] = ta.RSI(df.close, RSI_PERIOD).apply(formatter_number)
@@ -68,14 +49,32 @@ def get_analysis(ticker, startDate=None, endDate=None):
 
 
 def get_crossovers(df):
+    
     df['signal'] = 0.0
 
     df['signal'][LONG_MAVG2_PERIOD:] = np.where(df['short_mavg'][LONG_MAVG2_PERIOD:] > df['long_mavg_2'][LONG_MAVG2_PERIOD:], 1.0, 0.0)
     df['crossover'] = df['signal'].diff()
-    
+
     is_signal = df['crossover'] != 0
     signals = df[is_signal]
     signals = signals.dropna()
 
     return signals
+
+
+def get_candlestick_patterns(df):
+    # extract OHLC 
+    op = df['open']
+    hi = df['high']
+    lo = df['low']
+    cl = df['close']
+
+    candle_names = ta.get_function_groups()['Pattern Recognition']
+
+    for candle in candle_names:
+        df[candle] = getattr(ta, candle)(op, hi, lo, cl)
+
+    
+    return df
+
    
