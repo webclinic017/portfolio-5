@@ -10,66 +10,66 @@ from broker.config import ACCOUNT_NUMBER
 from utils.enums import PUT_CALL
 from utils.functions import formatter_number_2_digits
 
-class Account_Positions:
 
+class Account_Positions:
     def __init__(self):
         super().__init__()
         self.params_options = {
-            "quantity":"QTY",
-            "underlying":"TICKER",
-            "symbol":"SYMBOL",
-            "underlyingPrice":"TICKER PRICE",
-            "strikePrice":"STRIKE PRICE",
-            "lastPrice":"OPTION PRICE",
-            "intrinsic":"INTRINSIC",
-            "extrinsic":"EXTRINSIC",
-            "ITM":"ITM",
-            "theta":"THETA"
+            "quantity": "QTY",
+            "underlying": "TICKER",
+            "symbol": "SYMBOL",
+            "underlyingPrice": "TICKER PRICE",
+            "strikePrice": "STRIKE PRICE",
+            "lastPrice": "OPTION PRICE",
+            "intrinsic": "INTRINSIC",
+            "extrinsic": "EXTRINSIC",
+            "ITM": "ITM",
+            "theta": "THETA",
         }
 
         self.params_stocks = {
-            "quantity":"QTY",
-            "underlying":"TICKER",
-            "mark":"TICKER PRICE",
+            "quantity": "QTY",
+            "underlying": "TICKER",
+            "mark": "TICKER PRICE",
         }
 
         # Get All Open Positions
         self.res = pd.DataFrame()
-
 
     def get_put_positions(self):
         """ 
         Get all open Puts first from Accounts API and later pricing information
         for the symbol via Quotes
         """
+
         def addmoneyness(row):
-            intrinsic = round(max(row['strikePrice'] - row['underlyingPrice'], 0),2)
-            extrinsic = round(row['lastPrice'] - intrinsic, 2)
-            ITM = np.where(row["strikePrice"] > row["underlyingPrice"] , 'Y', 'N')
+            intrinsic = round(max(row["strikePrice"] - row["underlyingPrice"], 0), 2)
+            extrinsic = round(row["lastPrice"] - intrinsic, 2)
+            ITM = np.where(row["strikePrice"] > row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, ITM
-    
-       
+
         res = self.get_account_positions()
         # Filter for puts
-        isPut= res['option_type'] == PUT_CALL.PUT.value
+        isPut = res["option_type"] == PUT_CALL.PUT.value
         res_puts = res[isPut]
 
         # Get Quotes for open puts
         df = self.__get_option_position_details(res_puts)
 
         resDF = pd.DataFrame()
-        resDF[['intrinsic','extrinsic','ITM']] = df.apply(addmoneyness, axis=1 ,result_type="expand")
+        resDF[["intrinsic", "extrinsic", "ITM"]] = df.apply(
+            addmoneyness, axis=1, result_type="expand"
+        )
         df = df.join(resDF)
 
         if not df.empty:
-            df = df.drop(['option_type','type'], axis=1)
+            df = df.drop(["option_type", "type"], axis=1)
             df = df.rename(columns=self.params_options)
 
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"] * 100
 
         return df
-
 
     def get_call_positions(self):
         """ 
@@ -78,26 +78,28 @@ class Account_Positions:
         """
 
         def addmoneyness(row):
-            intrinsic = round(max(row['underlyingPrice'] - row['strikePrice'], 0), 2)
-            extrinsic = round(row['lastPrice'] - intrinsic, 2)
-            ITM = np.where(row["strikePrice"] < row["underlyingPrice"] , 'Y', 'N')
+            intrinsic = round(max(row["underlyingPrice"] - row["strikePrice"], 0), 2)
+            extrinsic = round(row["lastPrice"] - intrinsic, 2)
+            ITM = np.where(row["strikePrice"] < row["underlyingPrice"], "Y", "N")
             return intrinsic, extrinsic, ITM
 
         res = self.get_account_positions()
 
         # Filter for calls
-        isCall = res['option_type'] == PUT_CALL.CALL.value  
+        isCall = res["option_type"] == PUT_CALL.CALL.value
         res_calls = res[isCall]
 
         # Get Quotes for open calls
         df = self.__get_option_position_details(res_calls)
 
         resDF = pd.DataFrame()
-        resDF[['intrinsic','extrinsic','ITM']] = df.apply(addmoneyness, axis=1 ,result_type="expand")
+        resDF[["intrinsic", "extrinsic", "ITM"]] = df.apply(
+            addmoneyness, axis=1, result_type="expand"
+        )
         df = df.join(resDF)
 
         if not df.empty:
-            df = df.drop(['option_type','type'], axis=1)
+            df = df.drop(["option_type", "type"], axis=1)
             df = df.rename(columns=self.params_options)
 
         return df
@@ -111,17 +113,16 @@ class Account_Positions:
         res = self.get_account_positions()
 
         # Filter for calls
-        isEquity = res['type'] == "EQUITY"  
+        isEquity = res["type"] == "EQUITY"
         res_equity = res[isEquity]
 
         # Get Quotes for open calls
         df = self.__get_stock_position_details(res_equity)
         if not df.empty:
-            df = df.drop(['option_type','type','symbol'], axis=1)
+            df = df.drop(["option_type", "type", "symbol"], axis=1)
             df = df.rename(columns=self.params_stocks)
 
         return df
-
 
     def get_account_positions(self):
         """ 
@@ -134,7 +135,6 @@ class Account_Positions:
             self.res = account.get_positionsDF(account=ACCOUNT_NUMBER)
 
         return self.res
-        
 
     def __get_option_position_details(self, df):
         """ 
@@ -144,19 +144,25 @@ class Account_Positions:
         def get_quotes(row):
             """ 
             Invoke quotes for passed symbol
-            """ 
+            """
 
             quotes = Quotes()
-            res = quotes.get_quotes(row['symbol'])
-            return res['underlyingPrice'], res['strikePrice'], res['lastPrice'], res['theta']
+            res = quotes.get_quotes(row["symbol"])
+            return (
+                res["underlyingPrice"],
+                res["strikePrice"],
+                res["lastPrice"],
+                res["theta"],
+            )
 
         # Invoke getQuotesForSymbol for each symbol
         res = pd.DataFrame()
-        res[['underlyingPrice','strikePrice','lastPrice','theta']] = df.apply(get_quotes, axis=1 ,result_type="expand")
-        res['theta'] = res['theta'].apply(formatter_number_2_digits)
+        res[["underlyingPrice", "strikePrice", "lastPrice", "theta"]] = df.apply(
+            get_quotes, axis=1, result_type="expand"
+        )
+        res["theta"] = res["theta"].apply(formatter_number_2_digits)
         df = df.join(res)
         return df
-
 
     def __get_stock_position_details(self, df):
         """ 
@@ -166,14 +172,14 @@ class Account_Positions:
         def get_quotes(row):
             """ 
             Invoke quotes for passed symbol
-            """ 
+            """
 
             quotes = Quotes()
-            res = quotes.get_quotes(row['symbol'])
-            return res['mark']
+            res = quotes.get_quotes(row["symbol"])
+            return res["mark"]
 
         # Invoke getQuotesForSymbol for each symbol
         res = pd.DataFrame()
-        res['mark'] = df.apply(get_quotes, axis=1)
+        res["mark"] = df.apply(get_quotes, axis=1)
         df = df.join(res)
         return df

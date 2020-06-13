@@ -74,36 +74,33 @@ def watchlist_income(watch_list, params, func):
 
     # Get Option chain for watch list
     # Parallel mode for API calls
-    results = Parallel(n_jobs=num_cores)(
-        delayed(func)(i, params) for i in watch_list
-    )
+    results = Parallel(n_jobs=num_cores)(delayed(func)(i, params) for i in watch_list)
 
     #  Aggregate the results
     for result in results:
         df = df.append(result, ignore_index=True)
-    
 
     if not df.empty:
-        df = df.sort_values(by=['returns'], ascending=False)
-        df['strike_price'] = df['strike_price'].apply(formatter_currency_with_cents)
-        df['stock_price'] = df['stock_price'].apply(formatter_currency_with_cents)
-        df['mark'] = df['mark'].apply(formatter_currency_with_cents)
-        df['breakeven'] = df['breakeven'].apply(formatter_currency_with_cents)
+        df = df.sort_values(by=["returns"], ascending=False)
+        df["strike_price"] = df["strike_price"].apply(formatter_currency_with_cents)
+        df["stock_price"] = df["stock_price"].apply(formatter_currency_with_cents)
+        df["mark"] = df["mark"].apply(formatter_currency_with_cents)
+        df["breakeven"] = df["breakeven"].apply(formatter_currency_with_cents)
 
         df = df.drop(
-                [
-                    "desired_premium",
-                    "desired_moneyness",
-                    "desired_min_delta",
-                    "desired_max_delta",
-                    "type",
-                    "open_interest",
-                    "volume",
-                    "expiration_type",
-                    "spread",
-                ],
-                axis=1,
-            )
+            [
+                "desired_premium",
+                "desired_moneyness",
+                "desired_min_delta",
+                "desired_max_delta",
+                "type",
+                "open_interest",
+                "volume",
+                "expiration_type",
+                "spread",
+            ],
+            axis=1,
+        )
 
         df = df.rename(columns=table_mapping)
     return df

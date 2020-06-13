@@ -90,8 +90,11 @@ def income_finder(ticker, **kwargs):
             option.strike_price = float(strike_detail["strikePrice"])
             option.type = strike_detail["putCall"]
             option.days_to_expiration = strike_detail["daysToExpiration"]
-            option.returns = formatter_percent (
-                365 * option.mark * 100/ (option.strike_price * option.days_to_expiration)
+            option.returns = formatter_percent(
+                365
+                * option.mark
+                * 100
+                / (option.strike_price * option.days_to_expiration)
             )
             option.breakeven = option.strike_price - option.mark
             option.stock_price = float(current_stock_price)
@@ -135,11 +138,10 @@ def filter_strikes(option):
     def premium_flag(option):
         return option.mark > option.desired_premium * option.stock_price / 100
 
-
     def delta_flag(option):
-        '''
+        """
         Since UI is taking positive deltas, need to convert to negative deltas for puts
-        '''
+        """
 
         return (
             (option.type == PUT_CALL.PUT.value)

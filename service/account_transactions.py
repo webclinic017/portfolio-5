@@ -5,9 +5,11 @@ from broker.transactions import Transaction
 from broker.config import ACCOUNT_NUMBER
 import pandas as pd
 
+
 def get_transactions(
-    start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None):
-    
+    start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None
+):
+
     # Mapping column for UI display
     params_transactions = {
         "transactionDate": "DATE",
@@ -19,7 +21,7 @@ def get_transactions(
         "transactionItem.instrument.assetType": "TYPE",
         "transactionItem.instrument.putCall": "OPTION TYPE",
         "transactionItem.positionEffect": "POSITION",
-        "transactionItem.instrument.symbol" : "SYMBOL",
+        "transactionItem.instrument.symbol": "SYMBOL",
     }
 
     # In case start date or end date is not passed, use to initiliaze default
@@ -27,7 +29,7 @@ def get_transactions(
 
     if not end_date:
         end_date = to_date.strftime("%Y-%m-%d")
-    
+
     if not start_date:
         from_date = to_date - timedelta(days=180)
         start_date = from_date.strftime("%Y-%m-%d")
@@ -59,23 +61,29 @@ def get_transactions(
         )
 
         # Change df['transactionDate'] string to remove timestamp
-        df['transactionDate'] = pd.to_datetime(df['transactionDate'], format="%Y-%m-%dT%H:%M:%S%z").dt.strftime("%m/%d/%y")
+        df["transactionDate"] = pd.to_datetime(
+            df["transactionDate"], format="%Y-%m-%dT%H:%M:%S%z"
+        ).dt.strftime("%m/%d/%y")
 
         if instrument_type:
             if instrument_type == "PUT" or instrument_type == "CALL":
                 # Filter for either PUT or CALL option types
-                isOptionType = (df["transactionItem.instrument.putCall"] == instrument_type)
+                isOptionType = (
+                    df["transactionItem.instrument.putCall"] == instrument_type
+                )
                 df = df[isOptionType]
             elif instrument_type == "EQUITY" or instrument_type == "OPTION":
                 # Filter for either EQUITY or OPTION asset types
-                isAssetType = (df["transactionItem.instrument.assetType"] == instrument_type)
+                isAssetType = (
+                    df["transactionItem.instrument.assetType"] == instrument_type
+                )
                 df = df[isAssetType]
 
         if tran_type:
             isTranType = df["transactionSubType"] == tran_type
             # Filter for Transaction sub type
             df = df[isTranType]
-        
+
         df = df.rename(columns=params_transactions)
 
     return df
