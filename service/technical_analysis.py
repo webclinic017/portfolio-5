@@ -1,6 +1,5 @@
 import pandas as pd
 import logging
-from statistics import mean
 
 import numpy as np
 import talib as ta
@@ -28,7 +27,6 @@ Y_AXIS_SIZE = 12
 SHORT_SAVG_PERIOD = 10
 LONG_MAVG1_PERIOD = 20
 LONG_MAVG2_PERIOD = 30
-PERIOD = 30
 
 
 def get_analysis(df):
@@ -49,13 +47,7 @@ def get_analysis(df):
         formatter_number_2_digits
     )
 
-    low_period = min(df.low.tail(PERIOD))
-    high_period = max(df.high.tail(PERIOD))
-    mean_period = formatter_number_2_digits(mean(df.close.tail(PERIOD)))
-
-    logging.info("low_30 %s high_30 %s", low_period, high_period)
-
-    return df, low_period, high_period, mean_period
+    return df
 
 
 def get_crossovers(df):
@@ -76,7 +68,7 @@ def get_crossovers(df):
     return signals
 
 
-def recongnize_candlestick(df):
+def recognize_candlestick(df):
     """
     Recognizes candlestick patterns and appends 2 additional columns to df;
     1st - Best Performance candlestick pattern matched by www.thepatternsite.com
@@ -112,7 +104,7 @@ def recongnize_candlestick(df):
 
         # no pattern found
         if len(row[candle_names]) - sum(row[candle_names] == 0) == 0:
-            df.loc[index, "candlestick_pattern"] = "NO_PATTERN"
+            df.loc[index, "candlestick_pattern"] = ""
             df.loc[index, "candlestick_match_count"] = 0
         # single pattern found
         elif len(row[candle_names]) - sum(row[candle_names] == 0) == 1:

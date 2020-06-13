@@ -4,12 +4,16 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from datetime import timedelta
+from statistics import mean
 
-from service.technical_analysis import get_analysis
+from utils.functions import formatter_number_2_digits
+from service.technical_analysis import get_analysis, recognize_candlestick
 from broker.history import History
 
 from datetime import datetime as dt
 from datetime import timedelta
+
+PERIOD = 30
 
 
 def update_graph(ticker):
@@ -31,7 +35,14 @@ def update_graph(ticker):
     )
 
     # Get Technical analysis data in df
-    df, low_period, high_period, mean_period = get_analysis(df)
+    df = get_analysis(df)
+    df = recognize_candlestick(df)
+
+    low_period = min(df.low.tail(PERIOD))
+    high_period = max(df.high.tail(PERIOD))
+    mean_period = formatter_number_2_digits(mean(df.close.tail(PERIOD)))
+
+    logging.info("low_30 %s high_30 %s", low_period, high_period)
 
     logging.info("end date is %s", df.iloc[-1].at["datetime"])
     logging.info("start date is %s", df.iloc[-21].at["datetime"])
@@ -115,7 +126,7 @@ def update_graph(ticker):
     )
 
     fig.add_trace(
-        go.Bar(x=df["datetime"], y=df["volume"], name="Volume",), row=2, col=1,
+        go.Bar(x=df["datetime"], y=df["volume"], name="Volume",text=df['candlestick_pattern'], textposition='outside',), row=2, col=1,
     )
 
     # RSI scatter - Chart 2
