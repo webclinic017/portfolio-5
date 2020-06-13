@@ -144,10 +144,7 @@ TOP_COLUMN = dbc.Jumbotron(
         dbc.Row(
             dbc.Col(
                 dbc.Button(
-                    "Search",
-                    color="primary",
-                    className="float-right",
-                    id="income-btn",
+                    "Search", color="primary", className="float-right", id="income-btn",
                 ),
             ),
         ),
@@ -173,12 +170,7 @@ SEARCH_RESULT = [
     ),
 ]
 
-layout = html.Div(
-    [
-        dbc.Row(TOP_COLUMN, className="justify-content-center"),
-        dbc.Row(SEARCH_RESULT, className="justify-content-center"),
-    ],
-)
+layout = dbc.Container([dbc.Row(TOP_COLUMN), dbc.Row(SEARCH_RESULT),], fluid=True)
 
 
 @app.callback(
@@ -277,14 +269,11 @@ def show_details(selected_rows):
         selected_row = selected_rows[0]
 
         # Get the ticker symbol from dataframe by passing selected row and column which has the tickers
-        ticker = df.iloc[selected_row].at['TICKER']
+        ticker = df.iloc[selected_row].at["TICKER"]
 
         fig, info_text = update_graph(ticker)
         chart = html.Div(
-                [
-                    dbc.Alert(info_text, color="primary"),
-                    dcc.Graph(figure=fig),
-                ]
+            [dbc.Alert(info_text, color="primary"), dcc.Graph(figure=fig),]
         )
         return chart, True
 

@@ -63,7 +63,7 @@ def update_graph(ticker):
         go.Scatter(
             x=df["datetime"],
             y=df["short_mavg"],
-            name="10 day simple average",
+            name="10D SMA",
         ),
         row=1,
         col=1,
@@ -73,7 +73,7 @@ def update_graph(ticker):
         go.Scatter(
             x=df["datetime"],
             y=df["long_mavg_1"],
-            name="20 day exp average",
+            name="20D EMA",
         ),
         row=1,
         col=1,
@@ -83,7 +83,7 @@ def update_graph(ticker):
         go.Scatter(
             x=df["datetime"],
             y=df["long_mavg_2"],
-            name="30 day exp average",
+            name="30D EMA",
         ),
         row=1,
         col=1,

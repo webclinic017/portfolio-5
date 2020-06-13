@@ -40,7 +40,9 @@ TOP_COLUMN = dbc.Jumbotron(
                     dbc.FormGroup(
                         [
                             dbc.Label("Ticker", html_for="example-email-grid"),
-                            dbc.Input(type="text", id="screener_ticker", placeholder="",),
+                            dbc.Input(
+                                type="text", id="screener_ticker", placeholder="",
+                            ),
                         ]
                     ),
                     width=3,
@@ -64,23 +66,14 @@ TOP_COLUMN = dbc.Jumbotron(
 SEARCH_RESULT = [
     dbc.Col(
         [
-            html.Div(
-                dbc.Alert(
-                    id="screener-message",
-                    is_open=False,
-                ),
-            ),
-            html.Div(dbc.Spinner(html.Div(id="screener-output"))),
-        ]       
+            dbc.Alert(id="screener-message", is_open=False,),
+            dbc.Spinner(html.Div(id="screener-output")),
+        ]
     ),
 ]
 
-layout = html.Div(
-    [
-        dbc.Row(TOP_COLUMN, className="justify-content-center"), 
-        dbc.Row(SEARCH_RESULT, className="justify-content-center"),
-    ],
-)
+layout = dbc.Container([dbc.Row(TOP_COLUMN), dbc.Row(SEARCH_RESULT),], fluid=True)
+
 
 @app.callback(
     [
@@ -89,10 +82,7 @@ layout = html.Div(
         Output("screener-message", "children"),
     ],
     [Input("screener-btn", "n_clicks")],
-    [
-        State("screener_ticker", "value"),
-        State("screener_ticker_list", "value"),
-    ],
+    [State("screener_ticker", "value"), State("screener_ticker_list", "value"),],
 )
 def on_button_click(n, ticker, ticker_list):
     if n is None:
@@ -101,10 +91,7 @@ def on_button_click(n, ticker, ticker_list):
         if ticker:
             fig, info_text = update_graph(ticker)
             chart = html.Div(
-                    [
-                        dbc.Alert(info_text, color="primary"),
-                        dcc.Graph(figure=fig),
-                    ]
+                [dbc.Alert(info_text, color="primary"), dcc.Graph(figure=fig),]
             )
             return chart, False, ""
         else:

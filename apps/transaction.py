@@ -24,10 +24,7 @@ TOP_COLUMN = dbc.Jumbotron(
                 dbc.Col(
                     dbc.FormGroup(
                         [
-                            dbc.Label(
-                                "From Date",
-                                className="mr-3",
-                            ),
+                            dbc.Label("From Date", className="mr-3",),
                             dbc.Col(
                                 dcc.DatePickerSingle(
                                     id="start-date-picker", display_format="YYYY-MM-DD",
@@ -40,10 +37,7 @@ TOP_COLUMN = dbc.Jumbotron(
                 dbc.Col(
                     dbc.FormGroup(
                         [
-                            dbc.Label(
-                                "To Date",
-                                className="mr-3",
-                            ),
+                            dbc.Label("To Date", className="mr-3",),
                             dbc.Col(
                                 dcc.DatePickerSingle(
                                     id="end-date-picker", display_format="YYYY-MM-DD",
@@ -137,23 +131,13 @@ TOP_COLUMN = dbc.Jumbotron(
 SEARCH_RESULT = [
     dbc.Col(
         [
-            html.Div(
-                dbc.Alert(
-                    id="transaction-message",
-                    is_open=False,
-                ),
-            ),
-            html.Div(dbc.Spinner(html.Div(id="transaction-output"))),
-        ]       
+            dbc.Alert(id="transaction-message", is_open=False,),
+            dbc.Spinner(html.Div(id="transaction-output")),
+        ]
     ),
 ]
 
-layout = html.Div(
-    [
-        dbc.Row(TOP_COLUMN, className="justify-content-center"), 
-        dbc.Row(SEARCH_RESULT, className="justify-content-center"),
-    ],
-)
+layout = dbc.Container([dbc.Row(TOP_COLUMN), dbc.Row(SEARCH_RESULT),], fluid=True)
 
 
 @app.callback(
@@ -162,10 +146,7 @@ layout = html.Div(
         Output("transaction-message", "is_open"),
         Output("transaction-message", "children"),
     ],
-    [
-        Input("transaction-btn", "n_clicks"),
-        
-    ],
+    [Input("transaction-btn", "n_clicks"),],
     [
         State("start-date-picker", "date"),
         State("end-date-picker", "date"),
