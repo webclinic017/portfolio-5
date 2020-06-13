@@ -65,6 +65,9 @@ class Account_Positions:
             df = df.drop(['option_type','type'], axis=1)
             df = df.rename(columns=self.params_options)
 
+        # Add liquidity for Puts if assigned
+        df["COST"] = df["STRIKE PRICE"] * df["QTY"] * 100
+
         return df
 
 

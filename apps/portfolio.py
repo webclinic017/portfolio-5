@@ -8,18 +8,7 @@ import logging
 
 from app import app
 from service.account_positions import Account_Positions
-
-positions = Account_Positions()
-
-df_puts = pd.DataFrame()
-df_calls = pd.DataFrame()
-df_stocks = pd.DataFrame()
-
-
-# df_puts = positions.get_put_positions()
-# df_calls = positions.get_call_positions()
-# df_stocks = positions.get_stock_positions()
-
+from utils.functions import formatter_currency
 
 layout = html.Div(
     [
@@ -35,7 +24,16 @@ layout = html.Div(
         ),
         dbc.Row(html.H3(dbc.Badge("PUTS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
-        dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="puts_table")),)]),
+        dbc.Row([dbc.Col(
+                    [   
+                        html.Div((dbc.Alert(
+                            id="put-total",
+                            is_open=False,
+                        ))),
+                        dbc.Spinner(html.Div(id="puts_table")),
+                    ]
+                    )
+                ]),
         dbc.Row(html.H3(dbc.Badge("CALLS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="calls_table")),)]),
@@ -51,6 +49,8 @@ layout = html.Div(
         Output("puts_table", "children"),
         Output("calls_table", "children"),
         Output("stocks_table", "children"),
+        Output("put-total", "is_open"),
+        Output("put-total", "children"),
     ],
     [
         Input("portfolio-btn", "n_clicks"),
@@ -58,13 +58,18 @@ layout = html.Div(
 )
 def on_button_click(n):
     logging.info(" In on_button_click ")
+    positions = Account_Positions()
+
     df_puts = positions.get_put_positions()
     df_calls = positions.get_call_positions()
     df_stocks = positions.get_stock_positions()
+    cash_required = formatter_currency(df_puts['COST'].sum())
 
     return (
         dbc.Table.from_dataframe(df_puts, striped=True, bordered=True),
         dbc.Table.from_dataframe(df_calls, striped=True, bordered=True),
         dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True),
+        True,
+        f" Cash Required : {cash_required}"
     )
 
