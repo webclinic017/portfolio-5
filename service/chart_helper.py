@@ -9,6 +9,7 @@ from statistics import mean
 from utils.functions import formatter_number_2_digits
 from service.technical_analysis import get_analysis, recognize_candlestick
 from broker.history import History
+from broker.search import Search
 
 from datetime import datetime as dt
 from datetime import timedelta
@@ -33,6 +34,16 @@ def update_graph(ticker):
         startDate=startDate,
         endDate=endDate,
     )
+
+    search = Search()
+    company = search.search_instruments(symbol=ticker, projection="fundamental")
+
+    # Get Company Fundamentals
+    pe_ratio = company[ticker]["fundamental"]["peRatio"]
+    peg_ratio = company[ticker]["fundamental"]["pegRatio"]
+    eps = company[ticker]["fundamental"]["epsTTM"]
+
+    description = company[ticker]["description"]
 
     # Get Technical analysis data in df
     df = get_analysis(df)
@@ -196,6 +207,6 @@ def update_graph(ticker):
         height=800, title=ticker, template="plotly_white", showlegend=False,
     )
 
-    info_text = f" Average Close Price for 30 Day Period : {mean_period} "
+    info_text = f" {description} EPS:{eps} PE:{pe_ratio} PEG: {peg_ratio} 30D Avg close: {mean_period} "
 
     return fig, info_text

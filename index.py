@@ -22,9 +22,9 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Portfolio", href="/page-3", id="page-3-link")),
         dbc.NavItem(dbc.NavLink("Transactions", href="/page-4", id="page-4-link")),
     ],
-    brand="Portfolio",
+    brand="Aarya",
     brand_href="#",
-    color="primary",
+    color="dark",
     dark=True,
 )
 

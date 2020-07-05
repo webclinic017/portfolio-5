@@ -56,7 +56,6 @@ layout = dbc.Container(
     [Input("portfolio-btn", "n_clicks"),],
 )
 def on_button_click(n):
-    logging.info(" In on_button_click ")
     positions = Account_Positions()
 
     df_puts = positions.get_put_positions()

@@ -25,6 +25,7 @@ class Account_Positions:
             "extrinsic": "EXTRINSIC",
             "ITM": "ITM",
             "theta": "THETA",
+            "cost_price": "PURCHASE PRICE"
         }
 
         self.params_stocks = {
@@ -54,7 +55,7 @@ class Account_Positions:
         res_puts = res[isPut]
 
         # Get Quotes for open puts
-        df = self.__get_option_position_details(res_puts)
+        df = self.__get_option_pricing(res_puts)
 
         resDF = pd.DataFrame()
         resDF[["intrinsic", "extrinsic", "ITM"]] = df.apply(
@@ -90,7 +91,7 @@ class Account_Positions:
         res_calls = res[isCall]
 
         # Get Quotes for open calls
-        df = self.__get_option_position_details(res_calls)
+        df = self.__get_option_pricing(res_calls)
 
         resDF = pd.DataFrame()
         resDF[["intrinsic", "extrinsic", "ITM"]] = df.apply(
@@ -117,7 +118,7 @@ class Account_Positions:
         res_equity = res[isEquity]
 
         # Get Quotes for open calls
-        df = self.__get_stock_position_details(res_equity)
+        df = self.__get_stock_pricing(res_equity)
         if not df.empty:
             df = df.drop(["option_type", "type", "symbol"], axis=1)
             df = df.rename(columns=self.params_stocks)
@@ -136,7 +137,7 @@ class Account_Positions:
 
         return self.res
 
-    def __get_option_position_details(self, df):
+    def __get_option_pricing(self, df):
         """ 
         Get pricing info or the symbol via Quotes
         """
@@ -164,7 +165,7 @@ class Account_Positions:
         df = df.join(res)
         return df
 
-    def __get_stock_position_details(self, df):
+    def __get_stock_pricing(self, df):
         """ 
         Get pricing info or the symbol via Quotes
         """

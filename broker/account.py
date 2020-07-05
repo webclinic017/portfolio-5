@@ -98,6 +98,7 @@ class Account(Base):
                 type=position["instrument"]["assetType"],
                 underlying=underlying,
                 option_type=option_type,
+                cost_price = position["averagePrice"],
             )
             positions.append(new_position)
 
