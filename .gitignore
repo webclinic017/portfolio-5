@@ -10,7 +10,7 @@ __pycache__/
 env/
 
 # TD token
-broker/TDAmeritradeState.json
+#broker/TDAmeritradeState.json
 
 *.log
 
