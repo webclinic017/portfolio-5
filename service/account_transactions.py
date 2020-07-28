@@ -86,4 +86,7 @@ def get_transactions(
 
         df = df.rename(columns=params_transactions)
 
+        # For Equity Ticker comes as null. Use Symbol
+        df['TICKER'].fillna(df['SYMBOL'], inplace = True)
+
     return df

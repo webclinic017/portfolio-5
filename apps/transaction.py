@@ -8,7 +8,7 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
-from dash_table import DataTable
+import dash_tabulator
 from utils.constants import style_cell, style_header, style_data_conditional
 
 from app import app
@@ -164,17 +164,15 @@ def on_button_click(n, start_date, end_date, ticker, instrument_type, tran_type)
         if not df.empty:
             sum = round(df["TOTAL PRICE"].sum(), 2)
             sumText = 'Grand Total = "{}"'.format(sum)
-            dt = DataTable(
-                id="table",
-                columns=[{"name": i, "id": i} for i in df.columns],
+            options = { "groupBy": "TICKER", "selectable":1}
+
+            dt = dash_tabulator.DashTabulator(
+                id='screener-table',
+                columns=[{"id": i, "title": i, "field": i} for i in df.columns],
                 data=df.to_dict("records"),
-                page_size=10,
-                sort_action="native",
-                filter_action="native",
-                style_cell=style_cell,
-                style_header=style_header,
-                style_data_conditional=style_data_conditional,
-            )
+                options=options,
+                ),
+
             return dt, True, sumText
         else:
             return None, True, "No Records found"

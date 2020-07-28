@@ -12,6 +12,7 @@ from dash_table import DataTable
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import dash_tabulator
 
 
 from app import app
@@ -241,41 +242,36 @@ def on_button_click(
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
-            dt = DataTable(
-                id="screener-table",
-                columns=[{"name": i, "id": i} for i in df.columns],
+            options = { "groupBy": "TICKER", "selectable":1}
+
+            dt = dash_tabulator.DashTabulator(
+                id='screener-table',
+                columns=[{"id": i, "title": i, "field": i} for i in df.columns],
                 data=df.to_dict("records"),
-                page_size=10,
-                sort_action="native",
-                filter_action="native",
-                row_selectable="single",
-                style_cell=style_cell,
-                style_header=style_header,
-                style_data_conditional=style_data_conditional,
-            )
+                options=options,
+                ),
             return dt, False, ""
 
         else:
             return None, True, "No Results Found"
 
 
+# dash_tabulator can register a callback on rowClicked
+# to receive a dict of the row values
 @app.callback(
     [Output("chart-output", "children"), Output("modal-chart", "is_open"),],
-    [Input("screener-table", "selected_rows")],
-)
-def show_details(selected_rows):
-    if selected_rows:
-        # Dash passes a list for selected row, get the 1st value
-        selected_row = selected_rows[0]
-
+    [Input('screener-table', 'rowClicked')])
+def display_output(value):
+  
+    if value:
         # Get the ticker symbol from dataframe by passing selected row and column which has the tickers
-        ticker = df.iloc[selected_row].at["TICKER"]
-
+        ticker = value["TICKER"]
         fig, info_text = update_graph(ticker)
         chart = html.Div(
             [dbc.Alert(info_text, color="primary"), dcc.Graph(figure=fig),]
         )
         return chart, True
-
     else:
         return "", False
+
+    
