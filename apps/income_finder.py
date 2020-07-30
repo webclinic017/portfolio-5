@@ -242,7 +242,7 @@ def on_button_click(
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
-            options = { "groupBy": "TICKER", "selectable":1}
+            options = {"groupBy": "TICKER", "selectable":1, "pagination":"local", "paginationSize":20, "responsiveLayout":"true",}
 
             dt = dash_tabulator.DashTabulator(
                 id='screener-table',
