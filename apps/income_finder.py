@@ -17,7 +17,6 @@ import dash_tabulator
 
 from app import app
 from utils.constants import screener_list
-from utils.constants import style_cell, style_header, style_data_conditional
 from service.technical_analysis import get_analysis
 from service.chart_helper import update_graph
 

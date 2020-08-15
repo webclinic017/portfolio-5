@@ -56,17 +56,20 @@ layout = dbc.Container(
     [Input("portfolio-btn", "n_clicks"),],
 )
 def on_button_click(n):
-    positions = Account_Positions()
+    if n is not None:
+        positions = Account_Positions()
 
-    df_puts = positions.get_put_positions()
-    df_calls = positions.get_call_positions()
-    df_stocks = positions.get_stock_positions()
-    cash_required = formatter_currency(df_puts["COST"].sum())
+        df_puts = positions.get_put_positions()
+        df_calls = positions.get_call_positions()
+        df_stocks = positions.get_stock_positions()
+        cash_required = formatter_currency(df_puts["COST"].sum())
 
-    return (
-        dbc.Table.from_dataframe(df_puts, striped=True, bordered=True),
-        dbc.Table.from_dataframe(df_calls, striped=True, bordered=True),
-        dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True),
-        True,
-        f" Cash Required : {cash_required}",
-    )
+        return (
+            dbc.Table.from_dataframe(df_puts, striped=True, bordered=True),
+            dbc.Table.from_dataframe(df_calls, striped=True, bordered=True),
+            dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True),
+            True,
+            f" Cash Required : {cash_required}",
+        )
+    else:
+        return None, None, None, None, None
