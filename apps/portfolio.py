@@ -33,9 +33,11 @@ layout = dbc.Container(
                 )
             ]
         ),
+        html.P(),
         dbc.Row(html.H3(dbc.Badge("CALLS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="calls_table")),)]),
+        html.P(),
         dbc.Row(html.H3(dbc.Badge("STOCKS", color="primary", className="ml-1"))),
         html.Hr(className="my-2"),
         dbc.Row([dbc.Col(dbc.Spinner(html.Div(id="stocks_table")),)]),

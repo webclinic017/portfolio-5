@@ -63,7 +63,7 @@ class Account_Positions:
         df = df.join(resDF)
 
         if not df.empty:
-            df = df.drop(["option_type", "type"], axis=1)
+            df = df.drop(["option_type", "instrument_type"], axis=1)
             df = df.rename(columns=self.params_options)
 
         # Add liquidity for Puts if assigned
@@ -99,7 +99,7 @@ class Account_Positions:
         df = df.join(resDF)
 
         if not df.empty:
-            df = df.drop(["option_type", "type"], axis=1)
+            df = df.drop(["option_type", "instrument_type"], axis=1)
             df = df.rename(columns=self.params_options)
 
         return df
@@ -113,13 +113,13 @@ class Account_Positions:
         res = self.get_account_positions()
 
         # Filter for calls
-        isEquity = res["type"] == "EQUITY"
+        isEquity = res["instrument_type"] == "EQUITY"
         res_equity = res[isEquity]
 
         # Get Quotes for open calls
         df = self.__get_stock_pricing(res_equity)
         if not df.empty:
-            df = df.drop(["option_type", "type", "symbol"], axis=1)
+            df = df.drop(["option_type", "instrument_type", "symbol"], axis=1)
             df = df.rename(columns=self.params_stocks)
 
         return df

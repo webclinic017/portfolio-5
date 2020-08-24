@@ -94,7 +94,7 @@ class Account(Base):
             new_position = Position(
                 quantity=quantity,
                 symbol=position["instrument"]["symbol"],
-                type=position["instrument"]["assetType"],
+                instrument_type=position["instrument"]["assetType"],
                 underlying=underlying,
                 option_type=option_type,
                 averagePrice = position["averagePrice"],

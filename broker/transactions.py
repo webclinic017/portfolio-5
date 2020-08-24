@@ -1,8 +1,5 @@
-import requests
 import pandas as pd
 from .base import Base
-from .position import Position
-from .urls import GET_ACCOUNT, GET_ACCOUNTS
 
 
 class Transaction(Base):
@@ -54,7 +51,7 @@ class Transaction(Base):
         '''
 
         # default to a "Get Transaction" Request if anything else is passed through along with the transaction_id.
-        if transaction_id != None:
+        if transaction_id is not None:
             account = None
             transaction_type = None,
             start_date = None,
