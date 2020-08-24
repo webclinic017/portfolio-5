@@ -1,10 +1,9 @@
-import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-from dash_table import DataTable
-import pandas as pd
-import logging
+from dash.dependencies import Input, Output
+
+
+import dash_tabulator
 
 from app import app
 from service.account_positions import Account_Positions
@@ -64,10 +63,34 @@ def on_button_click(n):
         df_stocks = positions.get_stock_positions()
         cash_required = formatter_currency(df_puts["COST"].sum())
 
+        calls_dt = (
+            dash_tabulator.DashTabulator(
+                id="call-table",
+                columns=[{"id": i, "title": i, "field": i} for i in df_calls.columns],
+                data=df_calls.to_dict("records"),
+            ),
+        )
+
+        stocks_dt = (
+            dash_tabulator.DashTabulator(
+                id="put-table",
+                columns=[{"id": i, "title": i, "field": i} for i in df_stocks.columns],
+                data=df_stocks.to_dict("records"),
+            ),
+        )
+
+        puts_dt = (
+            dash_tabulator.DashTabulator(
+                id="put-table",
+                columns=[{"id": i, "title": i, "field": i} for i in df_puts.columns],
+                data=df_puts.to_dict("records"),
+            ),
+        )
+
         return (
-            dbc.Table.from_dataframe(df_puts, striped=True, bordered=True),
-            dbc.Table.from_dataframe(df_calls, striped=True, bordered=True),
-            dbc.Table.from_dataframe(df_stocks, striped=True, bordered=True),
+            puts_dt,
+            calls_dt,
+            stocks_dt,
             True,
             f" Cash Required : {cash_required}",
         )

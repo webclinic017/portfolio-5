@@ -1,10 +1,6 @@
-import pandas as pd
-import logging
-
+from itertools import compress
 import numpy as np
 import talib as ta
-
-from itertools import compress
 
 from utils.functions import formatter_number, formatter_number_2_digits
 from utils.candle_rankings import candle_rankings
@@ -155,4 +151,3 @@ def recognize_candlestick(df):
     df.drop(cols_to_drop, axis=1, inplace=True)
 
     return df
-

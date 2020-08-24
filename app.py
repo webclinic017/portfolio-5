@@ -1,8 +1,10 @@
+import logging
+
 import dash
 import dash_auth
 import dash_bootstrap_components as dbc
 from flask_caching import Cache
-import logging
+
 
 logging.basicConfig(filename="app.log",
                     level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -30,7 +32,6 @@ app.config.suppress_callback_exceptions = True
 
 
 cache = Cache(app.server, config={
-    'CACHE_TYPE': 'redis',
     # Note that filesystem cache doesn't work on systems with ephemeral
     # filesystems like Heroku.
     'CACHE_TYPE': 'filesystem',

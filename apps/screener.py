@@ -1,18 +1,11 @@
-from datetime import datetime as dt
-import pandas as pd
-import re
-import logging
-
-import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
-from utils.constants import screener_list
 from dash.dependencies import Input, Output, State
 
 from app import app
 
-from service.account_transactions import get_transactions
+from utils.constants import screener_list
 from service.chart_helper import update_graph
 
 TOP_COLUMN = dbc.Jumbotron(
@@ -82,9 +75,9 @@ layout = dbc.Container([dbc.Row(TOP_COLUMN), dbc.Row(SEARCH_RESULT),], fluid=Tru
         Output("screener-message", "children"),
     ],
     [Input("screener-btn", "n_clicks")],
-    [State("screener_ticker", "value"), State("screener_ticker_list", "value"),],
+    [State("screener_ticker", "value"),],
 )
-def on_button_click(n, ticker, ticker_list):
+def on_button_click(n, ticker):
     if n is None:
         return None, False, ""
     else:

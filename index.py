@@ -1,12 +1,10 @@
-import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from app import app, server
+from app import app
 from apps import portfolio, screener, transaction, income_finder
 
-import logging
 
 # the styles for the main content position it to the right of the sidebar and
 # add some padding.

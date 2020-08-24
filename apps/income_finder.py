@@ -1,31 +1,21 @@
-import pandas as pd
-from datetime import datetime as dt
-from datetime import timedelta
 import logging
+import pandas as pd
 
-import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-from dash_table import DataTable
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import dash_tabulator
 
 
 from app import app
 from utils.constants import screener_list
-from service.technical_analysis import get_analysis
 from service.chart_helper import update_graph
 
 from service.option_strategies import (
     watchlist_income,
     short_put,
     short_call,
-    long_put,
-    long_call,
 )
 
 df = pd.DataFrame()

@@ -1,9 +1,5 @@
-from datetime import datetime as dt
-import pandas as pd
-import re
 import logging
 
-import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import dash_core_components as dcc
@@ -177,8 +173,7 @@ def on_button_click(n, start_date, end_date, ticker, instrument_type, tran_type,
         df = get_transactions(start_date, end_date, ticker, instrument_type, tran_type)
         logging.info("instrument_type is %s ", instrument_type)
         if not df.empty:
-            sum = round(df["TOTAL PRICE"].sum(), 2)
-            sumText = 'Grand Total = "{}"'.format(sum)
+            sumText = 'Grand Total = "{}"'.format(round(df["TOTAL PRICE"].sum(), 2))
             options = {"selectable": 1}
             # Padd groupBy option to the Tabulator component to group at Ticker level
             if is_group:

@@ -1,12 +1,10 @@
 import os
 import time
 import json
-import datetime
-import requests
 import urllib.parse
 import logging
 
-import broker.utils
+import requests
 from .config import CONSUMER_ID, REDIRECT_URI, ACCOUNT_NUMBER
 from .exceptions import APIException
 

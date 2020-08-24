@@ -1,25 +1,22 @@
 import logging
-import plotly.express as px
+from datetime import timedelta
+from datetime import datetime as dt
+from statistics import mean
+
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
-from datetime import timedelta
-from statistics import mean
 
 from utils.functions import formatter_number_2_digits
 from service.technical_analysis import get_analysis, recognize_candlestick
 from broker.history import History
 from broker.search import Search
 
-from datetime import datetime as dt
-from datetime import timedelta
+
 
 PERIOD = 30
 
 
 def update_graph(ticker):
-
-    logging.info(f"{ticker}")
 
     endDate = dt.now()
     startDate = endDate - timedelta(days=120)

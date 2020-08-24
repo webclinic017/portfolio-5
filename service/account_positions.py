@@ -1,11 +1,10 @@
-import numpy as np
-import pandas as pd
 import logging
 
+import numpy as np
+import pandas as pd
 
 from broker.account import Account
 from broker.quotes import Quotes
-from broker.orders import Order
 from broker.config import ACCOUNT_NUMBER
 from utils.enums import PUT_CALL
 from utils.functions import formatter_number_2_digits
@@ -20,12 +19,12 @@ class Account_Positions:
             "symbol": "SYMBOL",
             "underlyingPrice": "TICKER PRICE",
             "strikePrice": "STRIKE PRICE",
-            "lastPrice": "OPTION PRICE",
+            "lastPrice": "CURRENT PRICE",
             "intrinsic": "INTRINSIC",
             "extrinsic": "EXTRINSIC",
             "ITM": "ITM",
             "theta": "THETA",
-            "cost_price": "PURCHASE PRICE"
+            "averagePrice": "PURCHASE PRICE"
         }
 
         self.params_stocks = {
