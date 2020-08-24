@@ -1,4 +1,3 @@
-import requests
 import datetime
 import pandas as pd
 import broker.utils
@@ -168,6 +167,3 @@ class History(Base):
         df = pd.json_normalize(res)
         df ['datetime'] =  df ['datetime'].apply(date_from_milliseconds) 
         return df
-
-
-

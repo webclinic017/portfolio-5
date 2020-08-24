@@ -5,7 +5,7 @@ import logging
 import requests
 from utils.store import Store
 from .config import CONSUMER_ID, REDIRECT_URI, ACCOUNT_NUMBER
-from .exceptions import APIException
+from utils.exceptions import APIException
 
 class Base:
 
@@ -217,7 +217,7 @@ class Base:
 
             # if they allowed for caching get from cache
             if self.config["cache_state"]:
-                current_auth_state = self.store.get_dict("auth_state")
+                current_auth_state = self.store.get_dict("auth_state") 
                 if current_auth_state: # If data available in cache
                     self.state.update(current_auth_state)
 
