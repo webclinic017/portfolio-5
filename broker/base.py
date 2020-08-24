@@ -1,13 +1,11 @@
-import os
 import time
-import json
 import urllib.parse
 import logging
 
 import requests
+from utils.store import Store
 from .config import CONSUMER_ID, REDIRECT_URI, ACCOUNT_NUMBER
 from .exceptions import APIException
-
 
 class Base:
 
@@ -15,7 +13,7 @@ class Base:
         TD Ameritrade API Client Class.
 
         Implements OAuth 2.0 Authorization Code Grant workflow, handles configuration
-        and state management, adds token for authenticated calls, and performs request 
+        and state management, adds token for authenticated calls, and performs request
         to the TD Ameritrade API.
     """
 
@@ -97,6 +95,9 @@ class Base:
 
         # update the configuration settings so they now contain the passed through value.
         self.config.update(kwargs.items())
+
+        # Cache store
+        self.store = Store()
 
         # call the state_manager method and update the state to init (initalized)
         self.state_manager("init")
@@ -202,36 +203,27 @@ class Base:
             "loggedin": False,
         }
 
-        # Grab the current directory of the client file, that way we can store the JSON file in the same folder.
-        if self.config["json_path"] is not None:
-            file_path = self.config["json_path"]
-        else:
-            dir_path = os.path.dirname(os.path.realpath(__file__))
-            filename = "TDAmeritradeState.json"
-            file_path = os.path.join(dir_path, filename)
+        # # Grab the current directory of the client file, that way we can store the JSON file in the same folder.
+        # if self.config["json_path"] is not None:
+        #     file_path = self.config["json_path"]
+        # else:
+        #     dir_path = os.path.dirname(os.path.realpath(__file__))
+        #     filename = "TDAmeritradeState.json"
+        #     file_path = os.path.join(dir_path, filename)
 
         # if the state is initalized
         if action == "init":
             self.state = initialized_state
 
-            # if they allowed for caching and the file exist, load the file.
-            if self.config["cache_state"] and os.path.isfile(file_path):
-                with open(file_path, "r") as fileHandle:
-                    self.state.update(json.load(fileHandle))
+            # if they allowed for caching get from cache
+            if self.config["cache_state"]:
+                self.state.update(self.store.get("auth_state"))
 
-            # if they didnt allow for caching delete the file.
-            elif not self.config["cache_state"] and os.path.isfile(
-                os.path.join(dir_path, filename)
-            ):
-                os.remove(file_path)
-
-        # if they want to save it and have allowed for caching then load the file.
+        # if they want to save it and have allowed for caching then read from cache
         elif action == "save" and self.config["cache_state"]:
-            with open(file_path, "w") as fileHandle:
-
-                # build JSON string using dictionary comprehension.
-                json_string = {key: self.state[key] for key in initialized_state}
-                json.dump(json_string, fileHandle)
+            # build JSON string using dictionary comprehension.
+            json_string = {key: self.state[key] for key in initialized_state}
+            self.store.set("auth_state", json_string)
 
     def login(self):
         """
@@ -338,7 +330,7 @@ class Base:
     def silent_sso(self):
         """
             Attempt a silent authentication, by checking whether current access token
-            is valid and/or attempting to refresh it. Returns True if we have successfully 
+            is valid and/or attempting to refresh it. Returns True if we have successfully
             stored a valid access token.
 
             RTYPE: Boolean
@@ -624,7 +616,7 @@ class Base:
                 "error"
             ]  # see if there is a fault message in the API response
 
-        except (KeyError, TypeError) as e:
+        except (KeyError, TypeError):
             return response_dict  # if no fault code or list is returned, then return the API response
 
         # if there is a fault code, raise an API exception
