@@ -217,13 +217,15 @@ class Base:
 
             # if they allowed for caching get from cache
             if self.config["cache_state"]:
-                self.state.update(self.store.get("auth_state"))
+                current_auth_state = self.store.get_dict("auth_state")
+                if current_auth_state: # If data available in cache
+                    self.state.update(current_auth_state)
 
         # if they want to save it and have allowed for caching then read from cache
         elif action == "save" and self.config["cache_state"]:
             # build JSON string using dictionary comprehension.
             json_string = {key: self.state[key] for key in initialized_state}
-            self.store.set("auth_state", json_string)
+            self.store.set_dict("auth_state", json_string)
 
     def login(self):
         """

@@ -1,15 +1,21 @@
-import memcache
+import redis
+import json
 
 class Store():
 
-    HOST = '127.0.0.1'
-    PORT = 11211
+    HOST = 'localhost'
+    PORT = 6379
+    PWD = ""
 
     def __init__(self):
-        self.client = memcache.Client([(self.HOST, self.PORT)])
+        self.client = redis.StrictRedis(host=self.HOST, port=self.PORT, password=self.PWD, decode_responses=True)
 
-    def set(self, key, val, ttl=0):
-        self.client.set(key, val, time=ttl)
+    def set_dict(self, key, val):
+        # Convert Dict to JSON string
+        json_val = json.dumps(val)
+        self.client.set(key, json_val)
     
-    def get (self, key):
-        return self.client.get(key)
+    def get_dict (self, key):
+        json_string =  self.client.get(key)
+        # Convert JSON string to Dict
+        return json.loads(json_string)
