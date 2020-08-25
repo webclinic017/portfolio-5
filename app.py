@@ -26,7 +26,6 @@ app = dash.Dash(
 )
 
 app.title = 'Options Tracker'
-app.server.secret_key = "option_tracker_01"
 auth = dash_auth.BasicAuth(
     app,
     VALID_USERNAME_PASSWORD_PAIRS

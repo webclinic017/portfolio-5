@@ -7,7 +7,7 @@ from broker.account import Account
 from broker.quotes import Quotes
 from broker.config import ACCOUNT_NUMBER
 from utils.enums import PUT_CALL
-from utils.functions import formatter_number_2_digits
+from utils.functions import formatter_number_2_digits, formatter_percent_2_digits
 
 
 class Account_Positions:
@@ -24,7 +24,8 @@ class Account_Positions:
             "extrinsic": "EXTRINSIC",
             "ITM": "ITM",
             "theta": "THETA",
-            "averagePrice": "PURCHASE PRICE"
+            "averagePrice": "PURCHASE PRICE",
+            "daysToExpiration": "DAYS",
         }
 
         self.params_stocks = {
@@ -63,11 +64,12 @@ class Account_Positions:
         df = df.join(resDF)
 
         if not df.empty:
-            df = df.drop(["option_type", "instrument_type"], axis=1)
+            df = df.drop(["option_type", "instrument_type", "intrinsic", "extrinsic" ], axis=1)
             df = df.rename(columns=self.params_options)
 
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"] * 100
+        df["RETURNS"] = (df["CURRENT PRICE"] * 365 * 100 / (df["STRIKE PRICE"] * df ["DAYS"])).apply(formatter_percent_2_digits)
 
         return df
 
@@ -148,23 +150,19 @@ class Account_Positions:
 
             quotes = Quotes()
             res = quotes.get_quotes(row["symbol"])
-            return (
-                res["underlyingPrice"],
-                res["strikePrice"],
-                res["lastPrice"],
-                res["theta"],
-            )
+            return res
 
         # Invoke getQuotesForSymbol for each symbol
-        res = pd.DataFrame()
-        res[["underlyingPrice", "strikePrice", "lastPrice", "theta"]] = df.apply(
+        res = df.apply(
             get_quotes, axis=1, result_type="expand"
         )
+
+        res = res[["underlyingPrice", "strikePrice", "lastPrice", "theta", "daysToExpiration"]]
         res["theta"] = res["theta"].apply(formatter_number_2_digits)
         df = df.join(res)
         return df
 
-    def __get_stock_pricing(self, df):
+    def __get_stock_pricing (self, df):
         """ 
         Get pricing info or the symbol via Quotes
         """
