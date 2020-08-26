@@ -226,8 +226,6 @@ def on_button_click(
         else:
             return None, True, "Enter Ticker or Select Watchlist"
 
-        logging.info(" ticker is %s", ticker)
-        logging.info("params %s", params)
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:

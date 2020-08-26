@@ -12,7 +12,7 @@ from .search_income import income_finder
 num_cores = multiprocessing.cpu_count()
 
 # Mapping column for UI display
-table_mapping = {
+TABLE_MAPPING = {
     "strike_price": "STRIKE",
     "stock_price": "STOCK PRICE",
     "volatility": "VOLATILITY",
@@ -24,6 +24,8 @@ table_mapping = {
     "returns": "RETURNS",
     "breakeven": "BREAK EVEN",
     "symbol": "SYMBOL",
+    "open_interest": "OPEN INT",
+    "volume" : "VOLUME",
 }
 
 
@@ -96,13 +98,12 @@ def watchlist_income(watch_list, params, func):
                 "desired_min_delta",
                 "desired_max_delta",
                 "type",
-                "open_interest",
-                "volume",
                 "expiration_type",
                 "spread",
+                "expiration"
             ],
             axis=1,
         )
 
-        df = df.rename(columns=table_mapping)
+        df = df.rename(columns=TABLE_MAPPING)
     return df
