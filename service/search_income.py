@@ -93,13 +93,13 @@ def income_finder(ticker, **kwargs):
             option.returns = formatter_percent(
                 365
                 * option.mark
-                * 100
-                / (option.strike_price * option.days_to_expiration)
+                / ((option.strike_price - option.mark) * option.days_to_expiration)
             )
             option.breakeven = option.strike_price - option.mark
             option.stock_price = float(current_stock_price)
             option.open_interest = int(strike_detail["openInterest"])
             option.volume = int(strike_detail["totalVolume"])
+            option.percentage_otm = formatter_percent((option.stock_price - option.strike_price) /option.stock_price)
 
             option.spread = float(strike_detail["ask"]) - float(strike_detail["bid"])
             option.desired_premium = float(params["premium"])

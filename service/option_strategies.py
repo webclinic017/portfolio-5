@@ -26,6 +26,7 @@ TABLE_MAPPING = {
     "symbol": "SYMBOL",
     "open_interest": "OPEN INT",
     "volume" : "VOLUME",
+    "percentage_otm" : "OTM",
 }
 
 

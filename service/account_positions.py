@@ -69,7 +69,7 @@ class Account_Positions:
 
         # Add liquidity for Puts if assigned
         df["COST"] = df["STRIKE PRICE"] * df["QTY"] * 100
-        df["RETURNS"] = (df["CURRENT PRICE"] * 365 * 100 / (df["STRIKE PRICE"] * df ["DAYS"])).apply(formatter_percent_2_digits)
+        df["RETURNS"] = (df["CURRENT PRICE"] * 365 / (df["STRIKE PRICE"] * df ["DAYS"])).apply(formatter_percent_2_digits)
 
         return df
 
