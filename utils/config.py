@@ -6,5 +6,5 @@ class Config(object):
         self._config = configparser.ConfigParser()
         self._config.read('config.ini')
 
-    def get(self, *args):
-        return self._config.get(*args)
+    def get(self, *args, fallback):
+        return self._config.get(*args, fallback= fallback)

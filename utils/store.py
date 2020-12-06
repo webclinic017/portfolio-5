@@ -7,11 +7,11 @@ from utils.exceptions import HaltCallbackException
 class Store:
     def __init__(self):
         config = Config()
+        host=config.get("REDIS", "HOST", fallback="localhost")
+        port=config.get("REDIS", "PORT", fallback=6379)
+        password=config.get("REDIS", "PWD", fallback="")
         self.client = redis.StrictRedis(
-            host=config.get("REDIS", "HOST"),
-            port=config.get("REDIS", "PORT"),
-            password=config.get("REDIS", "PWD"),
-            decode_responses=True,
+            host, port, password, decode_responses=True,
         )
 
     def set_dict(self, key, val):
@@ -22,12 +22,15 @@ class Store:
         except redis.exceptions.ConnectionError as err:
             raise HaltCallbackException("Unable to connect", err)
 
-    def get_dict(self, key):
+    def get_dict (self, key):
         try:
             json_string = self.client.get(key)
         except redis.exceptions.ConnectionError as err:
             raise HaltCallbackException("Unable to connect", err)
 
         # Convert JSON string to Dict
-        return json.loads(json_string)
+        if json_string:
+            return json.loads(json_string)
+        else:
+            return None
 
