@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from app import app
-from apps import portfolio, screener, transaction, income_finder
+from apps import portfolio, screener, transaction, income_finder, report
 
 
 # the styles for the main content position it to the right of the sidebar and
@@ -15,10 +15,11 @@ CONTENT_STYLE = {
 }
 navbar = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Income Finder", href="/page-1", id="page-1-link")),
-        dbc.NavItem(dbc.NavLink("Screener", href="/page-2", id="page-2-link")),
-        dbc.NavItem(dbc.NavLink("Portfolio", href="/page-3", id="page-3-link")),
-        dbc.NavItem(dbc.NavLink("Transactions", href="/page-4", id="page-4-link")),
+        dbc.NavItem(dbc.NavLink("Income Finder", href="/income_finder", id="page-1-link")),
+        dbc.NavItem(dbc.NavLink("Screener", href="/screener", id="page-2-link")),
+        dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-3-link")),
+        dbc.NavItem(dbc.NavLink("Transactions", href="/transaction", id="page-4-link")),
+        dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-5-link")),
     ],
     brand="Aarya",
     brand_href="#",
@@ -33,14 +34,16 @@ app.layout = html.Div([dcc.Location(id="url"), navbar, content])
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname in ["/", "/page-1"]:
+    if pathname in ["/", "/income_finder"]:
         return income_finder.layout
-    elif pathname == "/page-2":
+    elif pathname == "/screener":
         return screener.layout
-    elif pathname == "/page-3":
+    elif pathname == "/portfolio":
         return portfolio.layout
-    elif pathname == "/page-4":
+    elif pathname == "/transaction":
         return transaction.layout
+    elif pathname == "/report":
+        return report.layout
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [
