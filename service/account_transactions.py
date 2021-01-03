@@ -102,23 +102,27 @@ def get_transactions(
 def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
     df = get_transactions(start_date, end_date, symbol, instrument_type)
  
-    # All opening positions
-    df_open = df [df["POSITION"] == 'OPENING']
+    if not df.empty:
+        # All opening positions
+        df_open = df [df["POSITION"] == 'OPENING']
 
-    # All Closing positions
-    df_close = df [df["POSITION"] == 'CLOSING']
+        # All Closing positions
+        df_close = df [df["POSITION"] == 'CLOSING']
 
-    result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "TOTAL_PRICE", "QTY", "PRICE", "POSITION"]], how="left", on=["SYMBOL", "QTY"], suffixes=("_O", "_C"))
-    
-    result_df["PRICE"] = result_df.apply(lambda x: get_sum (x.PRICE_O, x.PRICE_C), axis=1)
-    result_df["TOTAL_PRICE"] = result_df.apply(lambda x: get_sum (x.TOTAL_PRICE_O, x.TOTAL_PRICE_C), axis=1)
-    result_df["POSITION"] = result_df["POSITION_O"]
-    result_df["TRAN_TYPE"] = result_df["POSITION_C"]
+        result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "TOTAL_PRICE", "QTY", "PRICE", "POSITION"]], how="left", on=["SYMBOL", "QTY"], suffixes=("_O", "_C"))
+        
+        result_df["PRICE"] = result_df["PRICE_O"]
+        result_df["CLOSE_PRICE"] = result_df["PRICE_C"]
+        result_df["TOTAL_PRICE"] = result_df.apply(lambda x: get_sum (x.TOTAL_PRICE_O, x.TOTAL_PRICE_C), axis=1)
+        result_df["POSITION"] = result_df["POSITION_O"]
+        result_df["TRAN_TYPE"] = result_df["POSITION_C"]
 
-    # Add Expiration Date
-    result_df["EXPIRATION_DATE"] = df["SYMBOL"].apply(get_expiration_date)
+        # Add Expiration Date
+        result_df["EXPIRATION_DATE"] = result_df["SYMBOL"].apply(get_expiration_date)
 
-    return result_df
+        return result_df
+    else:
+        return df
 
 
 def get_expiration_date(option_symbol):
@@ -127,7 +131,8 @@ def get_expiration_date(option_symbol):
     date_string = option_symbol.split('_')[1][:6]
 
     # Convert to datetime
-    return  dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
+    expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
+    return expiration_date
 
 def get_sum(opening, closing):
 
@@ -137,5 +142,5 @@ def get_sum(opening, closing):
     if math.isnan(closing):
         closing = 0
     
-    return formatter_number_2_digits(opening + closing)
+    return (opening + closing)
 
