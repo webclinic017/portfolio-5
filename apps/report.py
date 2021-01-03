@@ -127,15 +127,16 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
  
             columns = [
                 {"title": "DATE", "field": "DATE"},
-                {"title": "TOTAL PRICE", "field": "TOTAL PRICE"},
+                {"title": "EXPIRATION DATE", "field": "EXPIRATION_DATE"},
+                {"title": "TOTAL PRICE", "field": "TOTAL_PRICE"},
                 {"title": "SYMBOL", "field": "SYMBOL"},
-                {"title": "TRAN TYPE", "field": "TRAN TYPE"},
+                {"title": "TRAN TYPE", "field": "TRAN_TYPE"},
                 {"title": "POSITION", "field": "POSITION"},
                 {"title": "QTY", "field": "QTY"},
                 {"title": "PRICE", "field": "PRICE"},
                 {"title": "TICKER", "field": "TICKER"},
                 {"title": "TYPE", "field": "TYPE"},
-                {"title": "OPTION TYPE", "field": "OPTION TYPE"},
+                {"title": "OPTION TYPE", "field": "OPTION_TYPE"},
             ]
 
             dt = (

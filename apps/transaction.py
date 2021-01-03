@@ -181,15 +181,15 @@ def on_button_click(n, start_date, end_date, ticker, instrument_type, tran_type,
 
             columns = [
                 {"title": "DATE", "field": "DATE"},
-                {"title": "TOTAL PRICE", "field": "TOTAL PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
+                {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
                 {"title": "SYMBOL", "field": "SYMBOL"},
-                {"title": "TRAN TYPE", "field": "TRAN TYPE"},
+                {"title": "TRAN TYPE", "field": "TRAN_TYPE"},
                 {"title": "POSITION", "field": "POSITION"},
                 {"title": "QTY", "field": "QTY"},
                 {"title": "PRICE", "field": "PRICE"},
                 {"title": "TICKER", "field": "TICKER"},
                 {"title": "TYPE", "field": "TYPE"},
-                {"title": "OPTION TYPE", "field": "OPTION TYPE"},
+                {"title": "OPTION TYPE", "field": "OPTION_TYPE"},
             ]
 
             dt = (

@@ -1,4 +1,5 @@
 import logging
+import math
 
 from datetime import datetime as dt
 from datetime import timedelta
@@ -7,6 +8,7 @@ import pandas as pd
 
 from broker.transactions import Transaction
 from broker.config import ACCOUNT_NUMBER
+from utils.functions import formatter_number_2_digits
 
 
 
@@ -17,13 +19,13 @@ def get_transactions(
     # Mapping column for UI display
     params_transactions = {
         "transactionDate": "DATE",
-        "netAmount": "TOTAL PRICE",
-        "transactionSubType": "TRAN TYPE",
+        "netAmount": "TOTAL_PRICE",
+        "transactionSubType": "TRAN_TYPE",
         "transactionItem.amount": "QTY",
         "transactionItem.price": "PRICE",
         "transactionItem.instrument.underlyingSymbol": "TICKER",
         "transactionItem.instrument.assetType": "TYPE",
-        "transactionItem.instrument.putCall": "OPTION TYPE",
+        "transactionItem.instrument.putCall": "OPTION_TYPE",
         "transactionItem.positionEffect": "POSITION",
         "transactionItem.instrument.symbol": "SYMBOL",
     }
@@ -77,9 +79,6 @@ def get_transactions(
                 )
                 df = df[isOptionType]
 
-                # Add Expiration Date
-                df["expirationDate"] = df["transactionItem.instrument.symbol"].apply(get_expiration_date)
-
             elif instrument_type == "EQUITY" or instrument_type == "OPTION":
                 # Filter for either EQUITY or OPTION asset types
                 isAssetType = (
@@ -99,14 +98,6 @@ def get_transactions(
 
     return df
 
-def get_expiration_date(option_symbol):
- 
-    #split string by _ and get next 6 characters as symbol is of format FB_031320C225
-    date_string = option_symbol.split('_')[1][:6]
-
-    # Convert to datetime
-    return  dt.strptime(date_string, '%m%d%y').strftime('%m/%d/%y')
-
 
 def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
     df = get_transactions(start_date, end_date, symbol, instrument_type)
@@ -117,11 +108,34 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
     # All Closing positions
     df_close = df [df["POSITION"] == 'CLOSING']
 
-    result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL PRICE", "PRICE", "TICKER", "POSITION"]], df_close[["SYMBOL", "TOTAL PRICE", "PRICE", "POSITION"]], how="left", on=["SYMBOL"], suffixes=("_O", "_C"))
+    result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "TOTAL_PRICE", "QTY", "PRICE", "POSITION"]], how="left", on=["SYMBOL", "QTY"], suffixes=("_O", "_C"))
     
-    result_df["PRICE"] = result_df["PRICE_O"]
-    result_df["TOTAL PRICE"] = result_df["TOTAL PRICE_O"]
+    result_df["PRICE"] = result_df.apply(lambda x: get_sum (x.PRICE_O, x.PRICE_C), axis=1)
+    result_df["TOTAL_PRICE"] = result_df.apply(lambda x: get_sum (x.TOTAL_PRICE_O, x.TOTAL_PRICE_C), axis=1)
     result_df["POSITION"] = result_df["POSITION_O"]
-    result_df["TRAN TYPE"] = result_df["POSITION_C"]
+    result_df["TRAN_TYPE"] = result_df["POSITION_C"]
+
+    # Add Expiration Date
+    result_df["EXPIRATION_DATE"] = df["SYMBOL"].apply(get_expiration_date)
 
     return result_df
+
+
+def get_expiration_date(option_symbol):
+ 
+    #split string by _ and get next 6 characters as symbol is of format FB_031320C225
+    date_string = option_symbol.split('_')[1][:6]
+
+    # Convert to datetime
+    return  dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
+
+def get_sum(opening, closing):
+
+    if math.isnan(opening):
+        opening = 0
+    
+    if math.isnan(closing):
+        closing = 0
+    
+    return formatter_number_2_digits(opening + closing)
+
