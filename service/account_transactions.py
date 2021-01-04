@@ -109,9 +109,10 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         # All Closing positions
         df_close = df [df["POSITION"] == 'CLOSING']
 
-        result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "TOTAL_PRICE", "QTY", "PRICE", "POSITION"]], how="left", on=["SYMBOL", "QTY"], suffixes=("_O", "_C"))
+        result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "DATE", "TOTAL_PRICE", "QTY", "PRICE", "POSITION"]], how="outer", on=["SYMBOL", "QTY"], suffixes=("_O", "_C"))
         
         result_df["PRICE"] = result_df["PRICE_O"]
+        result_df["DATE"] = result_df.apply(lambda x: get_date (x.DATE_O, x.DATE_C), axis=1)
         result_df["CLOSE_PRICE"] = result_df["PRICE_C"]
         result_df["TOTAL_PRICE"] = result_df.apply(lambda x: get_sum (x.TOTAL_PRICE_O, x.TOTAL_PRICE_C), axis=1)
         result_df["POSITION"] = result_df["POSITION_O"]
@@ -143,4 +144,14 @@ def get_sum(opening, closing):
         closing = 0
     
     return (opening + closing)
+
+def get_date(opening_date, closing_date):
+
+    # No dates are coming as nan if blank or else as string
+    if isinstance(opening_date, str):
+        return opening_date
+    else:
+        # Only for closing transaction not matching
+        return closing_date
+
 
