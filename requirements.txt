@@ -13,7 +13,7 @@ dash-core-components==1.10.0
 dash-html-components==1.0.3
 dash-renderer==1.4.1
 dash-table==4.7.0
-dash-tabulator==0.0.5
+dash-tabulator==0.4.0
 Flask==1.1.2
 Flask-Caching==1.8.0
 Flask-Compress==1.5.0
