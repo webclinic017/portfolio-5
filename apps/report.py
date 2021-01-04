@@ -20,7 +20,6 @@ from service.account_transactions import get_report
 downloadButtonType = {"css": "btn btn-primary", "text":"Export", "type":"csv"}
 
 
-
 TOP_COLUMN = dbc.Jumbotron(
     [
         html.H5(children="Reports"),
