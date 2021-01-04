@@ -72,11 +72,9 @@ TOP_COLUMN = dbc.Jumbotron(
                             dbc.Select(
                                 id="instrument-type",
                                 options=[
-                                    {"label": "ALL", "value": ""},
                                     {"label": "CALL", "value": "CALL"},
                                     {"label": "PUT", "value": "PUT"},
                                     {"label": "EQUITY", "value": "EQUITY"},
-                                    {"label": "ALL OPTIONS", "value": "OPTION"},
                                 ],
                             ),
                         ],

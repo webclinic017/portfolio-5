@@ -102,7 +102,8 @@ def get_transactions(
 def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
     df = get_transactions(start_date, end_date, symbol, instrument_type)
  
-    if not df.empty:
+    # Processing for Options
+    if not df.empty and (instrument_type == "PUT" or instrument_type == "CALL"):
         # All opening positions
         df_open = df [df["POSITION"] == 'OPENING']
 
@@ -122,6 +123,7 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         result_df["EXPIRATION_DATE"] = result_df["SYMBOL"].apply(get_expiration_date)
 
         return result_df
+        
     else:
         return df
 
