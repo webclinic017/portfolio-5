@@ -1,5 +1,5 @@
 import logging
-import math
+import re
 
 from datetime import datetime as dt
 from datetime import timedelta
@@ -8,7 +8,6 @@ import pandas as pd
 
 from broker.transactions import Transaction
 from broker.config import ACCOUNT_NUMBER
-from utils.functions import formatter_number_2_digits
 
 
 
@@ -110,17 +109,18 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         # All Closing positions
         df_close = df [df["POSITION"] == 'CLOSING']
 
-        result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "DATE", "TOTAL_PRICE", "QTY", "PRICE", "POSITION"]], how="outer", on=["SYMBOL", "QTY"], suffixes=("_O", "_C"))
-        
+        result_df = pd.merge(df_open[["SYMBOL","DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "DATE", "TOTAL_PRICE", "QTY", "TICKER", "PRICE", "POSITION"]], how="outer", on=["SYMBOL", "QTY", "TICKER"], suffixes=("_O", "_C"))
+        result_df = result_df.fillna(0)
         result_df["PRICE"] = result_df["PRICE_O"]
         result_df["DATE"] = result_df.apply(lambda x: get_date (x.DATE_O, x.DATE_C), axis=1)
         result_df["CLOSE_PRICE"] = result_df["PRICE_C"]
-        result_df["TOTAL_PRICE"] = result_df.apply(lambda x: get_sum (x.TOTAL_PRICE_O, x.TOTAL_PRICE_C), axis=1)
+        result_df["TOTAL_PRICE"] = result_df.apply(lambda x:  x.TOTAL_PRICE_O + x.TOTAL_PRICE_C, axis=1)
         result_df["POSITION"] = result_df["POSITION_O"]
         result_df["TRAN_TYPE"] = result_df["POSITION_C"]
 
         # Add Expiration Date
         result_df["EXPIRATION_DATE"] = result_df["SYMBOL"].apply(get_expiration_date)
+        # result_df[["EXPIRATION_DATE"],["STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1, result_type="expand")
 
         return result_df
         
@@ -137,15 +137,28 @@ def get_expiration_date(option_symbol):
     expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
     return expiration_date
 
-def get_sum(opening, closing):
+def parse_option_string(option_symbol):
+    
+    # Regex to parse option string
+    matcher = re.compile(r'^(.+)([0-9]{6})([PC])([0-9]+)$')
 
-    if math.isnan(opening):
-        opening = 0
+    try:
+        groups = matcher.search(str(option_symbol))
+    except Exception as err:
+        logging.warn("Error: {}".format(err.message))
+
     
-    if math.isnan(closing):
-        closing = 0
-    
-    return (opening + closing)
+    # Date is in group 2
+    date_string = groups[2]
+
+    # Strike is in group 4
+    strike_price = groups[4]
+
+    # Convert to datetime
+    expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
+
+    return expiration_date, strike_price
+
 
 def get_date(opening_date, closing_date):
 

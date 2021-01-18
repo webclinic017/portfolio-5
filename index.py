@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 from app import app
-from apps import portfolio, screener, transaction, income_finder, report
+from view import portfolio, screener, transaction, income_finder, report, pivot
 
 
 # the styles for the main content position it to the right of the sidebar and
@@ -20,6 +20,7 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Portfolio", href="/portfolio", id="page-3-link")),
         dbc.NavItem(dbc.NavLink("Transactions", href="/transaction", id="page-4-link")),
         dbc.NavItem(dbc.NavLink("Report", href="/report", id="page-5-link")),
+        dbc.NavItem(dbc.NavLink("Pivot", href="/pivot", id="page-6-link")),
     ],
     brand="Aarya",
     brand_href="#",
@@ -44,6 +45,8 @@ def render_page_content(pathname):
         return transaction.layout
     elif pathname == "/report":
         return report.layout
+    elif pathname == "/pivot":
+        return pivot.layout
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [

@@ -17,9 +17,6 @@ from service.account_transactions import get_report
 #       type    => type of download (csv/ xlsx / pdf, remember to include appropriate 3rd party js libraries)
 #       filename => filename prefix defaults to data, will download as filename.type
 
-downloadButtonType = {"css": "btn btn-primary", "text":"Export", "type":"csv"}
-
-
 TOP_COLUMN = dbc.Jumbotron(
     [
         html.H5(children="Reports"),
@@ -109,6 +106,7 @@ SEARCH_RESULT = [
 ]
 
 layout = dbc.Container([dbc.Row(TOP_COLUMN), dbc.Row(SEARCH_RESULT),], fluid=True)
+downloadButtonType = {"css": "btn btn-primary", "text":"Export", "type":"csv"}
 
 @app.callback(
     [
@@ -133,14 +131,14 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
         if not df.empty:
  
             columns = [
+                {"title": "TICKER", "field": "TICKER"},
                 {"title": "DATE", "field": "DATE"},
                 {"title": "EXPIRATION DATE", "field": "EXPIRATION_DATE"},
                 {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
                 {"title": "PRICE", "field": "PRICE"},
                 {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
-                {"title": "SYMBOL", "field": "SYMBOL"},
                 {"title": "QTY", "field": "QTY"},
-                {"title": "TICKER", "field": "TICKER"},
+                {"title": "SYMBOL", "field": "SYMBOL"},
             ]
 
             dt = (
