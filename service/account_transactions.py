@@ -119,9 +119,8 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         result_df["TRAN_TYPE"] = result_df["POSITION_C"]
 
         # Add Expiration Date
-        result_df["EXPIRATION_DATE"] = result_df["SYMBOL"].apply(get_expiration_date)
-        # result_df[["EXPIRATION_DATE"],["STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1, result_type="expand")
-
+        # result_df["EXPIRATION_DATE"] = result_df["SYMBOL"].apply(get_expiration_date)
+        result_df[["EXPIRATION_DATE","STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1,result_type="expand")
         return result_df
         
     else:
@@ -137,22 +136,24 @@ def get_expiration_date(option_symbol):
     expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
     return expiration_date
 
-def parse_option_string(option_symbol):
+def parse_option_string(row):
+
+    option_symbol = row ["SYMBOL"]
+    
+    logging.debug(" Option Symbol is %s", option_symbol)
     
     # Regex to parse option string
-    matcher = re.compile(r'^(.+)([0-9]{6})([PC])([0-9]+)$')
+    matcher = re.compile(r'^(.+)([0-9]{6})([PC])(\d*\.?\d*)')
 
-    try:
-        groups = matcher.search(str(option_symbol))
-    except Exception as err:
-        logging.warn("Error: {}".format(err.message))
+    groups = matcher.search(option_symbol)
 
-    
     # Date is in group 2
     date_string = groups[2]
+    logging.debug(" date_string is %s", date_string)
 
     # Strike is in group 4
     strike_price = groups[4]
+    logging.debug(" strike_price is %s", strike_price)
 
     # Convert to datetime
     expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')

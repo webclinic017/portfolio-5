@@ -134,6 +134,7 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
                 {"title": "TICKER", "field": "TICKER"},
                 {"title": "DATE", "field": "DATE"},
                 {"title": "EXPIRATION DATE", "field": "EXPIRATION_DATE"},
+                {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
                 {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
                 {"title": "PRICE", "field": "PRICE"},
                 {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
