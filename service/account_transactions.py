@@ -118,23 +118,12 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         result_df["POSITION"] = result_df["POSITION_O"]
         result_df["TRAN_TYPE"] = result_df["POSITION_C"]
 
-        # Add Expiration Date
-        # result_df["EXPIRATION_DATE"] = result_df["SYMBOL"].apply(get_expiration_date)
+        # Add Expiration Date and Strike price bt parsing option symbol string
         result_df[["EXPIRATION_DATE","STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1,result_type="expand")
         return result_df
         
     else:
         return df
-
-
-def get_expiration_date(option_symbol):
- 
-    #split string by _ and get next 6 characters as symbol is of format FB_031320C225
-    date_string = option_symbol.split('_')[1][:6]
-
-    # Convert to datetime
-    expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
-    return expiration_date
 
 def parse_option_string(row):
 
