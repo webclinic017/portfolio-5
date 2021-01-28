@@ -9,6 +9,8 @@ import pandas as pd
 from broker.transactions import Transaction
 from broker.config import ACCOUNT_NUMBER
 
+from utils.functions import parse_option_symbol
+
 
 
 def get_transactions(
@@ -92,9 +94,6 @@ def get_transactions(
 
         df = df.rename(columns=params_transactions)
 
-        # For Equity Ticker comes as null. Use Symbol
-        df['TICKER'].fillna(df['SYMBOL'], inplace = True)
-
     return df
 
 
@@ -126,29 +125,10 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         return df
 
 def parse_option_string(row):
-
+    
     option_symbol = row ["SYMBOL"]
+    return parse_option_symbol(option_symbol)
     
-    logging.debug(" Option Symbol is %s", option_symbol)
-    
-    # Regex to parse option string
-    matcher = re.compile(r'^(.+)([0-9]{6})([PC])(\d*\.?\d*)')
-
-    groups = matcher.search(option_symbol)
-
-    # Date is in group 2
-    date_string = groups[2]
-    logging.debug(" date_string is %s", date_string)
-
-    # Strike is in group 4
-    strike_price = groups[4]
-    logging.debug(" strike_price is %s", strike_price)
-
-    # Convert to datetime
-    expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
-
-    return expiration_date, strike_price
-
 
 def get_date(opening_date, closing_date):
 

@@ -41,7 +41,24 @@ TOP_COLUMN = dbc.Jumbotron(
                             ),
                         ]
                     ),
-                    width=6,
+                    width=3,
+                ),
+                dbc.Col(
+                    dbc.FormGroup(
+                        [
+                            dbc.Label("GroupTicker"),
+                            dbc.Checklist(
+                                options=[
+                                    {"value": 1},
+                                ],
+                                value=[],
+                                id="is_group",
+                                switch=True,
+                                className="float-right",
+                            ),
+                        ]
+                    ),
+                    width=1,
                 ),
                 dbc.Col(
                     dbc.FormGroup(
@@ -180,6 +197,7 @@ layout = dbc.Container([dbc.Row(TOP_COLUMN), dbc.Row(SEARCH_RESULT),], fluid=Tru
         State("moneyness", "value"),
         State("ticker", "value"),
         State("ticker_list", "value"),
+        State("is_group", "value"),
     ],
 )
 def on_button_click(
@@ -193,6 +211,7 @@ def on_button_click(
     moneyness,
     ticker,
     ticker_list,
+    is_group,
 ):
     if n is None:
         return None, False, ""
@@ -229,7 +248,11 @@ def on_button_click(
 
         df = watchlist_income(tickers, params, func)
         if not df.empty:
-            options = {"groupBy": "TICKER", "selectable":1, "pagination":"local", "paginationSize":20, "responsiveLayout":"true", "movableRows": "true"}
+            options = {"selectable":1, "pagination":"local", "paginationSize":20, "responsiveLayout":"true", "movableRows": "true"}
+
+            # add groupBy option to the Tabulator component to group at Ticker level
+            if is_group:
+                options["groupBy"] = "TICKER"
 
             dt = dash_tabulator.DashTabulator(
                 id='screener-table',

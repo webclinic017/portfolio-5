@@ -2,7 +2,30 @@
 screener_list = {}
 
 # Adding list as value
-screener_list["option_stocks"] = ["LYFT", "TSLA", "CAT", "COST","EBAY"]
+screener_list["option_stocks"] = [
+    "HD",
+    "IBM",
+    "TGT",
+    "MSFT",
+    "CRM",
+    "FDX",
+    "INTC",
+    "NFLX",
+    "CAT",
+    "C",
+    "WFC",
+    "DIS",
+    "NVDA",
+    "EA",
+    "FB",
+    "AAPL",
+    "BA",
+    "AMD",
+    "LYFT",
+    "TSLA",
+    "TWTR",
+    "SPCE",
+]
 screener_list["finance"] = ["WF", "BAC", "JPM", "C", "GS", "V", "AXP", "COF"]
 screener_list["tech"] = ["ORCL", "IBM", "FB", "AAPL", "NFLX", "MSFT", "QQQ", "TWTR"]
 screener_list["ETF"] = [
@@ -30,7 +53,7 @@ screener_list["ETF"] = [
     "GLD",
     "QQQ",
     "SLV",
-    "SPY"
+    "SPY",
 ]
 screener_list["JEPI"] = [
     "AMZN",
