@@ -127,7 +127,8 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
 def parse_option_string(row):
     
     option_symbol = row ["SYMBOL"]
-    return parse_option_symbol(option_symbol)
+    expiration_date, strike_price =  parse_option_symbol(option_symbol)
+    return expiration_date, strike_price
     
 
 def get_date(opening_date, closing_date):
