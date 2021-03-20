@@ -131,9 +131,9 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
         if not df.empty:
  
             columns = [
-                {"title": "TICKER", "field": "TICKER"},
+                {"title": "TICKER", "field": "TICKER", "headerFilter":"input"},
                 {"title": "DATE", "field": "DATE"},
-                {"title": "EXPIRATION DATE", "field": "EXPIRATION_DATE"},
+                {"title": "EXPIRATION DATE", "field": "CLOSE_DATE"},
                 {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
                 {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
                 {"title": "PRICE", "field": "PRICE"},

@@ -38,6 +38,6 @@ def parse_option_symbol(symbol):
     strike_price = groups[4]
 
     # Convert to datetime
-    expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%m/%d/%y')
+    expiration_date = dt.strptime(date_string,'%m%d%y').strftime('%Y-%m-%d')
 
     return expiration_date, strike_price
