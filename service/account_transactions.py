@@ -79,22 +79,15 @@ def get_transactions(
         if instrument_type:
             if instrument_type == "PUT" or instrument_type == "CALL":
                 # Filter for either PUT or CALL option types
-                isOptionType = (
-                    df["transactionItem.instrument.putCall"] == instrument_type
-                )
-                df = df[isOptionType]
+                df = df[df["transactionItem.instrument.putCall"] == instrument_type]
 
             elif instrument_type == "EQUITY" or instrument_type == "OPTION":
                 # Filter for either EQUITY or OPTION asset types
-                isAssetType = (
-                    df["transactionItem.instrument.assetType"] == instrument_type
-                )
-                df = df[isAssetType]
+                df = df[df["transactionItem.instrument.assetType"] == instrument_type]
 
         if tran_type:
-            isTranType = df["transactionSubType"] == tran_type
             # Filter for Transaction sub type
-            df = df[isTranType]
+            df = df[df["transactionSubType"] == tran_type]
 
         df = df.rename(columns=params_transactions)
 
@@ -102,16 +95,6 @@ def get_transactions(
 
 
 def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None):
-    
-    # In case start date or end date is not passed, use to initiliaze default
-    to_date = dt.now()
-    
-    if not end_date:
-        end_date = to_date.strftime("%Y-%m-%d")
-
-    if not start_date:
-        from_date = to_date - timedelta(days=180)
-        start_date = from_date.strftime("%Y-%m-%d")
 
     df = get_transactions(start_date, end_date, symbol, instrument_type)
  
@@ -128,11 +111,11 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
         result_df["PRICE"] = result_df["PRICE_O"]
         result_df[["DATE","CLOSE_DATE"]] = result_df.apply(get_date, axis=1, result_type="expand")
         result_df["CLOSE_PRICE"] = result_df["PRICE_C"]
-        result_df["TOTAL_PRICE"] = result_df.apply(lambda x:  formatter_number_2_digits(x.TOTAL_PRICE_O + x.TOTAL_PRICE_C), axis=1)
+        result_df["TOTAL_PRICE"] = result_df.apply(lambda x:  x.TOTAL_PRICE_O + x.TOTAL_PRICE_C, axis=1)
         result_df["POSITION"] = result_df["POSITION_O"]
         result_df["TRAN_TYPE"] = result_df["POSITION_C"]
 
-        # Add Expiration Date and Strike price bt parsing option symbol string
+        # Add Close Date and Strike price by parsing option symbol string
         result_df[["CLOSE_DATE","STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1,result_type="expand")
 
         result_df = result_df[(result_df['CLOSE_DATE'] > '2021-01-01')]
