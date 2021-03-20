@@ -114,7 +114,7 @@ downloadButtonType = {"css": "btn btn-primary", "text":"Export", "type":"csv"}
         Output("report-message", "is_open"),
         Output("report-message", "children"),
     ],
-    [Input("report-btn", "n_clicks"),],
+    [Input("report-bparse_option_responseks"),],
     [
         State("start-date-picker", "date"),
         State("end-date-picker", "date"),
@@ -129,19 +129,26 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
 
         df = get_report(start_date, end_date, ticker, instrument_type)
         if not df.empty:
- 
-            columns = [
-                {"title": "TICKER", "field": "TICKER", "headerFilter":"input"},
-                {"title": "DATE", "field": "DATE"},
-                {"title": "EXPIRATION DATE", "field": "CLOSE_DATE"},
-                {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
-                {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
-                {"title": "PRICE", "field": "PRICE"},
-                {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
-                {"title": "QTY", "field": "QTY"},
-                {"title": "SYMBOL", "field": "SYMBOL"},
-            ]
-
+            if instrument_type == "EQUITY":
+               columns = [
+                    {"title": "SYMBOL", "field": "SYMBOL", "headerFilter":"input"},
+                    {"title": "DATE", "field": "DATE"},
+                    {"title": "PRICE", "field": "PRICE"},
+                    {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
+                    {"title": "QTY", "field": "QTY"},
+                ]
+            else:
+                columns = [
+                 get_option_tran_datele": "TICKER", "field": "TICKER", "headerFilter":"input"},
+                    {"title": "OPEN DATE", "field": "DATE"},
+                    {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
+                    {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
+                    {"title": "TOTAL PRICE", "field": "TOTAL_PRICE", "topCalc":"sum", "topCalcParams":{"precision":2,}},
+                    {"title": "PRICE", "field": "PRICE"},
+                    {"title": "CLOSE PRICE", "field": "CLOSE_PRICE"},
+                    {"title": "QTY", "field": "QTY"},
+                    {"title": "SYMBOL", "field": "SYMBOL"},
+                ]
             dt = (
                 dash_tabulator.DashTabulator(
                     id="report-table",
