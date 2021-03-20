@@ -9,6 +9,24 @@ from broker.config import ACCOUNT_NUMBER
 from utils.functions import parse_option_symbol, formatter_number_2_digits
 
 
+def retrive_transactions(
+    start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None
+):
+    
+    df = get_transactions(start_date, end_date, symbol, instrument_type, tran_type)
+    if instrument_type:
+        if instrument_type == "PUT" or instrument_type == "CALL":
+            # Filter for either PUT or CALL option types
+            df = df[df["OPTION_TYPE"] == instrument_type]
+
+        elif instrument_type == "EQUITY" or instrument_type == "OPTION":
+            # Filter for either EQUITY or OPTION asset types
+            df = df[df["TYPE"] == instrument_type]
+
+    if tran_type:
+        # Filter for Transaction sub type
+        df = df[df["transactionSubType"] == tran_type]
+    return df
 
 def get_transactions(
     start_date=None, end_date=None, symbol=None, instrument_type=None, tran_type=None
@@ -71,23 +89,10 @@ def get_transactions(
             df["transactionDate"], format="%Y-%m-%dT%H:%M:%S%z"
         ).dt.strftime("%Y-%m-%d")
 
-         # Change df['transactionDate'] string to remove timestamp
+        # Change df['optionExpirationDate'] string to remove timestamp
         df["transactionItem.instrument.optionExpirationDate"] = pd.to_datetime(
             df["transactionItem.instrument.optionExpirationDate"], format="%Y-%m-%dT%H:%M:%S%z"
         ).dt.strftime("%Y-%m-%d")
-
-        if instrument_type:
-            if instrument_type == "PUT" or instrument_type == "CALL":
-                # Filter for either PUT or CALL option types
-                df = df[df["transactionItem.instrument.putCall"] == instrument_type]
-
-            elif instrument_type == "EQUITY" or instrument_type == "OPTION":
-                # Filter for either EQUITY or OPTION asset types
-                df = df[df["transactionItem.instrument.assetType"] == instrument_type]
-
-        if tran_type:
-            # Filter for Transaction sub type
-            df = df[df["transactionSubType"] == tran_type]
 
         df = df.rename(columns=params_transactions)
 
@@ -99,30 +104,43 @@ def get_report(start_date=None, end_date=None, symbol=None, instrument_type=None
     df = get_transactions(start_date, end_date, symbol, instrument_type)
  
     # Processing for Options
-    if not df.empty and (instrument_type == "PUT" or instrument_type == "CALL"):
-        # All opening positions
-        df_open = df [df["POSITION"] == 'OPENING']
-
-        # All Closing positions
-        df_close = df [df["POSITION"] == 'CLOSING']
-
-        result_df = pd.merge(df_open[["SYMBOL","DATE","EXPIRY_DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "DATE", "TOTAL_PRICE", "QTY", "TICKER", "PRICE", "POSITION"]], how="outer", on=["SYMBOL", "QTY", "TICKER"], suffixes=("_O", "_C"))
-        result_df = result_df.fillna(0)
-        result_df["PRICE"] = result_df["PRICE_O"]
-        result_df[["DATE","CLOSE_DATE"]] = result_df.apply(get_date, axis=1, result_type="expand")
-        result_df["CLOSE_PRICE"] = result_df["PRICE_C"]
-        result_df["TOTAL_PRICE"] = result_df.apply(lambda x:  x.TOTAL_PRICE_O + x.TOTAL_PRICE_C, axis=1)
-        result_df["POSITION"] = result_df["POSITION_O"]
-        result_df["TRAN_TYPE"] = result_df["POSITION_C"]
-
-        # Add Close Date and Strike price by parsing option symbol string
-        result_df[["CLOSE_DATE","STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1,result_type="expand")
-
-        result_df = result_df[(result_df['CLOSE_DATE'] > '2021-01-01')]
-        return result_df
+    if not df.empty:
+        if (instrument_type == "PUT" or instrument_type == "CALL"):
+            # Filter for either PUT or CALL option types
+            result_df = parse_option_response(df, instrument_type)
+            df = result_df
         
-    else:
-        return df
+        elif instrument_type == "EQUITY":
+            # Filter for either EQUITY or OPTION asset types
+            df = df[df["TYPE"] == instrument_type]
+    
+    return df
+
+def parse_option_response(df, instrument_type):
+    # Filter for either PUT or CALL option types
+    df = df[df["OPTION_TYPE"] == instrument_type]
+
+    # All opening positions
+    df_open = df [df["POSITION"] == 'OPENING']
+
+    # All Closing positions
+    df_close = df [df["POSITION"] == 'CLOSING']
+
+    result_df = pd.merge(df_open[["SYMBOL","DATE","EXPIRY_DATE","TOTAL_PRICE", "PRICE", "QTY","TICKER", "POSITION"]], df_close[["SYMBOL", "DATE", "TOTAL_PRICE", "QTY", "TICKER", "PRICE", "POSITION"]], how="outer", on=["SYMBOL", "QTY", "TICKER"], suffixes=("_O", "_C"))
+    result_df = result_df.fillna(0)
+    result_df["PRICE"] = result_df["PRICE_O"]
+    result_df[["DATE","CLOSE_DATE"]] = result_df.apply(get_option_tran_date, axis=1, result_type="expand")
+    result_df["CLOSE_PRICE"] = result_df["PRICE_C"]
+    result_df["TOTAL_PRICE"] = result_df.apply(lambda x:  x.TOTAL_PRICE_O + x.TOTAL_PRICE_C, axis=1)
+    result_df["POSITION"] = result_df["POSITION_O"]
+    result_df["TRAN_TYPE"] = result_df["POSITION_C"]
+
+    # Add Close Date and Strike price by parsing option symbol string
+    result_df[["CLOSE_DATE","STRIKE_PRICE"]] = result_df.apply(parse_option_string, axis=1,result_type="expand")
+
+    result_df = result_df[(result_df['CLOSE_DATE'] > '2021-01-01')]
+    return result_df
+
 
 def parse_option_string(row):
     
@@ -137,8 +155,7 @@ def parse_option_string(row):
     return expiration_date, strike_price
     
 
-def get_date(row):
-
+def get_option_tran_date(row):
     open_date = row["DATE_O"]
     close_date = row["DATE_C"]
 

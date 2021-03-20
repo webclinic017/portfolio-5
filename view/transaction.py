@@ -8,7 +8,7 @@ import dash_tabulator
 
 from app import app
 
-from service.account_transactions import get_transactions
+from service.account_transactions import retrive_transactions
 
 TOP_COLUMN = dbc.Jumbotron(
     [
@@ -170,7 +170,7 @@ def on_button_click(n, start_date, end_date, ticker, instrument_type, tran_type,
         return None, False, ""
     else:
 
-        df = get_transactions(start_date, end_date, ticker, instrument_type, tran_type)
+        df = retrive_transactions(start_date, end_date, ticker, instrument_type, tran_type)
         logging.info("instrument_type is %s ", instrument_type)
         if not df.empty:
             sumText = 'Grand Total = "{}"'.format(round(df["TOTAL_PRICE"].sum(), 2))
