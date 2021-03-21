@@ -114,7 +114,7 @@ downloadButtonType = {"css": "btn btn-primary", "text":"Export", "type":"csv"}
         Output("report-message", "is_open"),
         Output("report-message", "children"),
     ],
-    [Input("report-bparse_option_responseks"),],
+    [Input("report-btn", "n_clicks"),],
     [
         State("start-date-picker", "date"),
         State("end-date-picker", "date"),
@@ -139,7 +139,7 @@ def on_search(n, start_date, end_date, ticker, instrument_type):
                 ]
             else:
                 columns = [
-                 get_option_tran_datele": "TICKER", "field": "TICKER", "headerFilter":"input"},
+                    {"title": "TICKER", "field": "TICKER", "headerFilter":"input"},
                     {"title": "OPEN DATE", "field": "DATE"},
                     {"title": "CLOSE DATE", "field": "CLOSE_DATE"},
                     {"title": "STRIKE_PRICE", "field": "STRIKE_PRICE"},
