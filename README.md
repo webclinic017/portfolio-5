@@ -1,8 +1,10 @@
-Python Web Framework to integrate with Broker. Currently supports TD Broker.
+Python Flask Web Framework to integrate with Broker. Currently supports TD Broker.
+Run index.py to start Flask server.  The OAuth token is retreived from Redis but can be changed to pick up from any persistent store including File.
 
 Features
 1) Search for option income - Covered Calls and Secured Puts
 2) Retrieves all your transaction based on Filter criteria - Date, Trade Type, Ticker, etc.
+3) Shows the price for a ticker and other charting capabilities
 
 <img width="1419" alt="Screen Shot 2021-03-21 at 11 36 38 AM" src="https://user-images.githubusercontent.com/5234229/111916848-29dcbb00-8a3a-11eb-80b2-281ad1377e29.png">
 
